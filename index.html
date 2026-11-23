@@ -115,7 +115,21 @@ nav button.on{color:var(--acc)}nav button svg{width:22px;height:22px}
 .coach{background:var(--card2);border:0;border-left:3px solid var(--acc);color:var(--txt)}
 .toast{border-color:var(--line)}
 .levelup{color:var(--acc)}
-[hidden]{display:none!important}</style>
+[hidden]{display:none!important}.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rcard{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer}
+.rimg{height:92px;display:flex;align-items:center;justify-content:center;position:relative;font-size:44px}
+.rimg b{position:absolute;bottom:6px;right:8px;font-size:11px;background:rgba(0,0,0,.45);color:#fff;padding:2px 7px;border-radius:99px;font-weight:600}
+.rimg i{position:absolute;top:6px;right:9px;font-style:normal;color:#ff5d7a;font-size:16px}
+.rbody{padding:8px 10px 10px}.rname{font-weight:600;font-size:14px;line-height:1.25;margin-bottom:3px}
+.g-perte{background:linear-gradient(135deg,#3a1f14,#7a3516)}.g-forme{background:linear-gradient(135deg,#14302a,#1f5a48)}.g-masse{background:linear-gradient(135deg,#1b2440,#2f3f78)}
+.rhero{height:150px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:72px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;margin-top:10px}
+.grid4 .stat{background:var(--card2);border-radius:10px;padding:8px 2px;margin:0}
+.meals{margin-top:12px}.meal{border-top:1px solid var(--line);padding:9px 0}.mitem{padding:5px 0 0;font-size:14px;cursor:pointer}
+.xbtn{background:none;color:var(--mut);font-size:13px;padding:0 4px}
+.ilist,.slist{margin:6px 0 14px;padding-left:20px;line-height:1.6}.slist li{margin-bottom:4px}
+.pill.on{background:var(--acc);color:#140a02;border-color:var(--acc);font-weight:600}.exitem.sel{background:var(--card2);border-radius:10px;padding-left:8px}
+</style>
 </head>
 <body>
 <div id="app"></div>
@@ -330,7 +344,7 @@ let tab="home";
 function go(t){tab=t;render();window.scrollTo(0,0)}
 function renderNav(){document.getElementById("nav").innerHTML=TABS.map(([id,e,l])=>`<button class="${tab===id?'on':''}" onclick="go('${id}')"><b>${e}</b>${l}</button>`).join("")}
 function render(){renderNav();const a=document.getElementById("app");
-  a.innerHTML=`<header class="top"><h1>Muscu<span>Quest</span></h1><div class="row" style="gap:6px"><button class="pill" style="position:relative;font-size:15px;padding:5px 10px" onclick="openNotifs()">🔔${(()=>{const n=unread();return n?`<span class="nb">${n}</span>`:""})()}</button><button class="pill" style="font-size:15px;padding:5px 10px;${S.premium?'border-color:var(--gold)':''}" onclick="openPremium()" ${FREE?"hidden":""}>👑</button><button class="pill" onclick="openSettings()">⚙️</button></div></header>`+({home:vHome,work:vWork,lib:vLib,prog:vProg,fr:vFr}[tab])();
+  a.innerHTML=`<header class="top"><h1>Muscu<span>Quest</span></h1><div class="row" style="gap:6px"><button class="pill" style="position:relative;font-size:15px;padding:5px 10px" onclick="openNotifs()">🔔${(()=>{const n=unread();return n?`<span class="nb">${n}</span>`:""})()}</button><button class="pill" style="font-size:15px;padding:5px 10px;${S.premium?'border-color:var(--gold)':''}" onclick="openPremium()" ${FREE?"hidden":""}>👑</button><button class="pill" onclick="openSettings()">⚙️</button></div></header>`+({home:vHome,work:vWork,lib:vLib,nutri:vNutri,prog:vProg,fr:vFr}[tab])();
   if(tab==="prog"&&progTab==="perf")drawChart();if(tab==="prog"&&progTab==="body")drawLine("bodyChart",S.body.filter(x=>x.w).map(x=>x.w));
 }
 
@@ -1704,16 +1718,17 @@ const ICO={home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-
  bell:'<path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"/>',
  crown:'<path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/>',
  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+ nutri:'<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.5 1-4 4-4 8h4"/>',
  chev:'<path d="M9 6l6 6-6 6"/>'};
 const svgI=(k,sz)=>`<svg viewBox="0 0 24 24" ${sz?`width="${sz}" height="${sz}"`:""} fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
-const TABS2=[["home","Accueil"],["work","Séance"],["lib","Exercices"],["prog","Progrès"],["fr","Défis"]];
+const TABS2=[["home","Accueil"],["work","Séance"],["lib","Exercices"],["nutri","Repas"],["prog","Progrès"],["fr","Défis"]];
 function renderNav(){document.getElementById("nav").innerHTML=TABS2.map(([id,l])=>`<button class="${tab===id?'on':''}" onclick="go('${id}')">${svgI(id)}${l}</button>`).join("")}
 function headerHTML(){const n=unread();return `<header class="top"><h1>Muscu<span>Quest</span></h1><div class="row" style="gap:6px">
   <button class="iconbtn" aria-label="Notifications" onclick="openNotifs()">${svgI("bell")}${n?`<span class="nb">${n}</span>`:""}</button>
   <button class="iconbtn" aria-label="Premium" ${FREE?'hidden':''} style="${S.premium?'color:var(--gold)':''}" onclick="openPremium()">${svgI("crown")}</button>
   <button class="iconbtn" aria-label="Réglages" onclick="openSettings()">${svgI("gear")}</button></div></header>`}
 function render(){renderNav();const a=document.getElementById("app");
-  a.innerHTML=headerHTML()+({home:vHome,work:vWork,lib:vLib,prog:vProg,fr:vFr}[tab])();
+  a.innerHTML=headerHTML()+({home:vHome,work:vWork,lib:vLib,nutri:vNutri,prog:vProg,fr:vFr}[tab])();
   if(tab==="prog"&&progTab==="perf")drawChart();if(tab==="prog"&&progTab==="body")drawLine("bodyChart",S.body.filter(x=>x.w).map(x=>x.w));}
 function vHome(){const L=levelInfo(S.xp),q=quests(),sk=streaks(),CL=CLASSES[S.cls],b=bossInfo(),n=planNext();
   const cta=S.active?`<button class="btn" onclick="go('work')">Reprendre ma séance</button>`:n&&!n.finished?`<button class="btn" onclick="startPlanDay()">Commencer : ${esc(n.day.n)}</button><div class="mut" style="text-align:center;margin-top:6px;font-size:13px">${esc(n.p.n)} · semaine ${n.week}/${n.p.weeks}</div>`:`<button class="btn" onclick="go('work')">Commencer une séance</button>`;
@@ -1754,6 +1769,162 @@ function adCard(){if(S.premium||FREE)return "";const today=new Date().toDateStri
    <div class="row" style="margin-top:8px;gap:6px;flex-wrap:wrap"><button class="btn sec sm" ${can?"":"disabled style='opacity:.4'"} onclick="watchAd()">Regarder une pub : +25 XP</button><button class="btn sec sm" onclick="openPremium()">Retirer les pubs</button></div></div>`}
 
 if(FREE&&!S.premium){S.premium={since:Date.now(),free:1};save()}
+/* ================== NUTRITION ================== */
+/* Valeurs pour 100 g : [nom, kcal, protéines, glucides, lipides] — valeurs moyennes type tables CIQUAL/USDA */
+const ING={
+avoine:["flocons d'avoine",372,13.5,58.7,7],lait:["lait demi-écrémé",46,3.3,4.8,1.6],skyr:["skyr nature",63,11,4,0.2],
+fb0:["fromage blanc 0 %",49,7.5,4,0.2],grec:["yaourt grec 2 %",73,9.9,3.9,2],oeuf:["œuf",140,12.5,0.7,9.7],blanc:["blanc d'œuf",47,10.5,0.7,0.2],
+banane:["banane",90,1.1,20,0.3],pomme:["pomme",53,0.3,11.6,0.2],rouges:["fruits rouges",45,1,8,0.4],kiwi:["kiwi",60,1,12,0.5],mangue:["mangue",65,0.8,15,0.3],
+cacahuete:["beurre de cacahuète",600,25,14,49],miel:["miel",304,0.3,82,0],painc:["pain complet",247,10,41,3.5],avocat:["avocat",160,2,3,15],
+poulet:["blanc de poulet",110,23,0,1.5],dinde:["escalope de dinde",105,23,0,1.2],boeuf5:["bœuf haché 5 %",125,21,0,5],steak15:["steak haché 15 %",215,18,0,15],
+saumon:["saumon",200,20,0,13],cabillaud:["cabillaud",80,18,0,0.7],thon:["thon au naturel",110,25,0,1],crevette:["crevettes",85,19,0,1],sardine:["sardines égouttées",210,24,0,12],
+tofu:["tofu ferme",145,15,2,8.5],lentilles:["lentilles corail (crues)",340,24,50,1.5],pchiche:["pois chiches cuits",130,7,17,2.5],hrouges:["haricots rouges cuits",115,8,15,0.5],edamame:["edamame",120,11,9,5],
+riz:["riz basmati (cru)",350,8,77,0.6],pates:["pâtes complètes (crues)",350,13,64,2.5],quinoa:["quinoa (cru)",368,14,64,6],semoule:["semoule (crue)",360,12,72,1.5],nouilles:["nouilles de riz (crues)",360,6,80,0.6],
+patate:["patate douce",86,1.6,20,0.1],pdt:["pomme de terre",77,2,17,0.1],tortilla:["tortilla de blé",300,8,50,7],galette:["galettes de riz",380,8,80,3],
+brocoli:["brocoli",34,2.8,4,0.4],courgette:["courgette",17,1.2,2.2,0.3],epinard:["épinards",23,2.9,1.4,0.4],tomate:["tomate",18,0.9,3,0.2],poivron:["poivron",26,1,5,0.3],
+oignon:["oignon",40,1.1,8.5,0.1],salade:["salade verte",15,1.4,1.5,0.2],concombre:["concombre",15,0.7,2.4,0.1],champi:["champignons",22,3,1,0.3],hverts:["haricots verts",31,1.8,4.5,0.2],
+carotte:["carotte",41,0.9,8,0.2],mais:["maïs",86,3,16,1.2],huile:["huile d'olive",900,0,0,100],beurre:["beurre",745,0.7,0.6,82],feta:["feta",264,14,4,21],
+mozza:["mozzarella light",160,18,2,9],parmesan:["parmesan",390,33,0,28],emmental:["emmental râpé",380,28,0,30],jambon:["jambon blanc",110,20,1,3],
+amande:["amandes",600,21,9,52],noix:["noix",650,15,7,65],choco:["chocolat noir 70 %",580,8,33,43],whey:["protéine en poudre (whey)",380,78,7,5],
+soja:["sauce soja",53,8,4.9,0.6],pesto:["pesto",450,5,5,45],coulis:["coulis de tomate",35,1.5,6,0.3],houmous:["houmous",250,7,13,19],granola:["granola",450,9,62,17],
+creme:["crème légère 15 %",170,3,4,15],dattes:["dattes",280,2.5,66,0.4],cottage:["cottage cheese",98,11,3.4,4.3],coco:["lait de coco",190,2,3,19],
+chia:["graines de chia",490,17,8,31],cacao:["cacao maigre en poudre",350,20,12,11],epices:["épices / herbes",0,0,0,0],ail:["ail",0,0,0,0],citron:["citron",0,0,0,0]};
+/* Recette : [id, nom, emoji, objectif, repas, minutes, tags, ingrédients [[ing, g, "affichage"?]], étapes] */
+const NG={perte:"Perte de poids",forme:"Équilibre",masse:"Prise de masse"};
+const NG_ICO={perte:"🔥",forme:"⚖️",masse:"💪"};
+const NM={pdj:"Petit-déj",dej:"Déjeuner",din:"Dîner",col:"Collation"};
+const NM_ICO={pdj:"🌅",dej:"☀️",din:"🌙",col:"🍎"};
+const RAW_REC=[
+/* ---------- PERTE DE POIDS ---------- */
+["p1","Skyr fruits rouges & avoine","🫐","perte","pdj",5,["rapide","vege"],[["skyr",200],["rouges",100],["avoine",30],["miel",5,"1 c. à café de miel"]],["Verse le skyr dans un bol.","Ajoute les flocons d'avoine et les fruits rouges.","Un filet de miel et c'est prêt."]],
+["p2","Omelette épinards & champignons","🍳","perte","pdj",10,["rapide","vege"],[["oeuf",110,"2 œufs"],["blanc",100,"3 blancs d'œufs"],["epinard",60],["champi",60],["painc",40,"1 tranche de pain complet"],["huile",3,"quelques gouttes d'huile"]],["Fais revenir champignons et épinards 3 min à la poêle huilée.","Bats œufs et blancs, verse sur les légumes.","Cuis 3-4 min à feu moyen, plie et sers avec le pain."]],
+["p3","Porridge pomme-cannelle","🥣","perte","pdj",8,["vege"],[["avoine",40],["lait",200],["pomme",100,"1 petite pomme"],["skyr",100],["epices",0,"cannelle"]],["Fais chauffer avoine + lait 4 min en remuant.","Ajoute la pomme en dés et la cannelle.","Sers avec le skyr par-dessus pour les protéines."]],
+["p4","Tartine œuf-avocat","🥑","perte","pdj",8,["rapide","vege"],[["painc",50,"1 grande tranche de pain complet"],["avocat",40,"1/4 d'avocat"],["oeuf",110,"2 œufs"],["tomate",50]],["Fais cuire les œufs mollets (6 min) ou au plat sans matière grasse.","Écrase l'avocat sur le pain grillé.","Ajoute les œufs, la tomate, sel et poivre."]],
+["p5","Fromage blanc protéiné kiwi","🥝","perte","pdj",3,["rapide","vege"],[["fb0",250],["kiwi",150,"2 kiwis"],["amande",10,"une poignée d'amandes (10 g)"]],["Mets le fromage blanc dans un bol.","Coupe les kiwis par-dessus.","Ajoute les amandes concassées."]],
+["p6","Bowl poulet-quinoa-légumes","🥗","perte","dej",20,[],[["poulet",130],["quinoa",50],["brocoli",120],["poivron",80],["huile",5,"1 c. à café d'huile d'olive"],["citron",0,"jus de citron"]],["Cuis le quinoa 12 min dans l'eau salée.","Fais dorer le poulet en lamelles à la poêle avec l'huile.","Cuis le brocoli à la vapeur 6 min, coupe le poivron cru.","Assemble le bol, arrose de citron."]],
+["p7","Salade thon-haricots verts","🐟","perte","dej",10,["rapide"],[["thon",120,"1 boîte de thon"],["hverts",150],["oeuf",55,"1 œuf dur"],["tomate",100],["pdt",120],["huile",5,"1 c. à café d'huile d'olive"]],["Cuis la pomme de terre et l'œuf 10 min.","Mélange haricots verts, tomate, thon émietté.","Ajoute pomme de terre et œuf en morceaux, assaisonne."]],
+["p8","Wok de crevettes aux légumes","🍤","perte","dej",15,["rapide"],[["crevette",150],["courgette",120],["poivron",100],["riz",50],["soja",15,"1 c. à soupe de sauce soja"],["huile",5]],["Lance la cuisson du riz.","Saute les légumes 5 min au wok très chaud.","Ajoute les crevettes 3 min et la sauce soja.","Sers sur le riz."]],
+["p9","Chili léger dinde & haricots","🌶️","perte","dej",25,[],[["dinde",120],["hrouges",100],["coulis",150],["oignon",50],["poivron",80],["riz",40],["epices",0,"cumin, paprika"]],["Fais revenir l'oignon et la dinde en petits dés.","Ajoute poivron, haricots, coulis et épices.","Laisse mijoter 15 min, sers avec le riz."]],
+["p10","Wrap poulet croquant","🌯","perte","dej",10,["rapide"],[["tortilla",60,"1 tortilla"],["poulet",110],["salade",30],["tomate",50],["concombre",50],["skyr",40,"2 c. à soupe de skyr (sauce)"]],["Grille le poulet assaisonné en lamelles.","Mélange le skyr avec herbes, sel, poivre.","Garnis la tortilla, roule bien serré."]],
+["p11","Dahl de lentilles corail","🍛","perte","dej",25,["vege"],[["lentilles",70],["tomate",150],["oignon",50],["epinard",80],["coco",30,"2 c. à soupe de lait de coco"],["epices",0,"curry, curcuma"]],["Fais revenir l'oignon avec le curry.","Ajoute lentilles rincées, tomates et 300 ml d'eau.","Cuis 15 min, ajoute épinards et lait de coco 2 min avant la fin."]],
+["p12","Cabillaud en papillote & légumes","🐠","perte","din",25,[],[["cabillaud",160],["courgette",150],["tomate",100],["pdt",150],["huile",5],["citron",0,"rondelles de citron"]],["Préchauffe le four à 200 °C.","Mets légumes en rondelles et poisson dans du papier cuisson.","Citron, huile, sel, poivre, ferme et enfourne 18 min.","Cuis la pomme de terre à la vapeur à côté."]],
+["p13","Soupe-repas poulet & légumes","🍲","perte","din",30,[],[["poulet",110],["carotte",100],["courgette",100],["oignon",50],["pates",30,"30 g de petites pâtes"],["epices",0,"bouillon, thym"]],["Fais revenir l'oignon, ajoute 600 ml de bouillon.","Ajoute carottes, courgettes et poulet en dés, cuis 15 min.","Ajoute les pâtes 8 min avant la fin."]],
+["p14","Courgettes farcies au bœuf","🫑","perte","din",35,[],[["boeuf5",120],["courgette",250,"2 courgettes"],["coulis",100],["mozza",30],["oignon",30]],["Coupe les courgettes en deux et creuse-les.","Fais revenir oignon, bœuf et chair des courgettes, ajoute le coulis.","Farcis, ajoute la mozza, 20 min au four à 200 °C."]],
+["p15","Tofu sauté brocoli-sésame","🥦","perte","din",15,["rapide","vege"],[["tofu",150],["brocoli",150],["riz",40],["soja",15],["huile",5],["ail",0,"1 gousse d'ail"]],["Lance le riz.","Dore le tofu en cubes à la poêle huilée 6 min.","Ajoute brocoli, ail et sauce soja, couvre 4 min."]],
+["p16","Omelette au four aux légumes","🥚","perte","din",25,["vege"],[["oeuf",165,"3 œufs"],["poivron",80],["epinard",60],["feta",20],["salade",60]],["Préchauffe à 180 °C.","Bats les œufs, ajoute légumes et feta émiettée.","Verse dans un plat, 18 min au four, sers avec la salade."]],
+["p17","Salade saumon-concombre","🍣","perte","din",10,["rapide"],[["saumon",100],["concombre",150],["salade",60],["quinoa",30],["skyr",50,"sauce skyr-aneth"]],["Cuis le quinoa 12 min.","Cuis le saumon 4 min de chaque côté.","Assemble avec concombre, salade et sauce skyr-aneth."]],
+["p18","Pomme & beurre de cacahuète","🍏","perte","col",2,["rapide","vege"],[["pomme",150,"1 pomme"],["cacahuete",10,"2 c. à café de beurre de cacahuète"]],["Coupe la pomme en quartiers.","Trempe dans le beurre de cacahuète."]],
+["p19","Skyr cacao","🍫","perte","col",2,["rapide","vege"],[["skyr",150],["cacao",5,"1 c. à café de cacao"],["miel",5]],["Mélange le skyr avec le cacao et le miel.","Garde au frais, c'est encore meilleur."]],
+["p20","Œufs durs & crudités","🥕","perte","col",10,["vege"],[["oeuf",110,"2 œufs"],["carotte",80],["concombre",80]],["Cuis les œufs 9 min.","Coupe carottes et concombre en bâtonnets."]],
+["p21","Cottage cheese & ananas-mangue","🥭","perte","col",2,["rapide","vege"],[["cottage",150],["mangue",80]],["Verse le cottage cheese dans un bol.","Ajoute la mangue en dés."]],
+["p22","Galettes de riz jambon","🍘","perte","col",3,["rapide"],[["galette",16,"2 galettes de riz"],["jambon",60,"2 tranches"],["fb0",40]],["Tartine les galettes de fromage blanc.","Ajoute le jambon, poivre."]],
+/* ---------- ÉQUILIBRE ---------- */
+["f1","Bowl granola-yaourt grec","🥣","forme","pdj",3,["rapide","vege"],[["grec",200],["granola",40],["banane",100,"1 banane"],["miel",5]],["Verse le yaourt dans un bol.","Ajoute granola et banane en rondelles, puis le miel."]],
+["f2","Pancakes avoine-banane","🥞","forme","pdj",15,["vege"],[["avoine",50],["banane",100,"1 banane"],["oeuf",110,"2 œufs"],["lait",50],["rouges",80],["huile",3]],["Mixe avoine, banane, œufs et lait.","Cuis des petits pancakes 2 min par face dans une poêle huilée.","Sers avec les fruits rouges."]],
+["f3","Toast œufs brouillés & saumon","🍞","forme","pdj",10,["rapide"],[["painc",70,"2 tranches de pain complet"],["oeuf",110,"2 œufs"],["saumon",40,"1 tranche de saumon fumé"],["beurre",5]],["Brouille les œufs à feu doux avec le beurre.","Fais griller le pain.","Dresse œufs et saumon sur les toasts."]],
+["f4","Overnight oats chia-mangue","🥭","forme","pdj",5,["vege"],[["avoine",50],["lait",150],["chia",10],["skyr",100],["mangue",80]],["Mélange avoine, lait, chia et skyr dans un pot.","Laisse une nuit au frigo.","Le matin, ajoute la mangue."]],
+["f5","Smoothie banane-cacahuète","🥤","forme","pdj",5,["rapide","vege"],[["lait",250],["banane",100],["avoine",30],["cacahuete",15],["grec",100]],["Mets tout dans le blender.","Mixe 30 secondes, bois frais."]],
+["f6","Poulet, riz & légumes rôtis","🍗","forme","dej",30,[],[["poulet",150],["riz",70],["courgette",100],["poivron",100],["huile",10]],["Préchauffe à 200 °C, mets les légumes en dés avec l'huile 20 min.","Cuis le riz.","Grille le poulet assaisonné 10 min."]],
+["f7","Pâtes complètes bolognaise","🍝","forme","dej",25,[],[["pates",80],["boeuf5",120],["coulis",150],["oignon",40],["carotte",50],["parmesan",10]],["Fais revenir oignon et carotte râpée.","Ajoute le bœuf, puis le coulis, mijote 15 min.","Cuis les pâtes, sers avec le parmesan."]],
+["f8","Buddha bowl pois chiches","🥙","forme","dej",20,["vege"],[["pchiche",150],["quinoa",50],["avocat",50],["carotte",80],["epinard",40],["houmous",30]],["Cuis le quinoa.","Rôtis les pois chiches 15 min au four avec épices.","Assemble tout avec le houmous."]],
+["f9","Saumon, patate douce & haricots","🐟","forme","dej",30,[],[["saumon",130],["patate",200],["hverts",150],["huile",5]],["Rôtis la patate douce en cubes 25 min à 200 °C.","Cuis les haricots à la vapeur 8 min.","Poêle le saumon 4 min par face."]],
+["f10","Burrito bowl bœuf","🌮","forme","dej",20,[],[["boeuf5",120],["riz",60],["hrouges",80],["mais",50],["tomate",80],["avocat",40],["epices",0,"paprika, cumin"]],["Cuis le riz.","Fais revenir le bœuf avec les épices.","Assemble riz, bœuf, haricots, maïs, tomate et avocat."]],
+["f11","Poke bowl thon","🍱","forme","dej",15,["rapide"],[["thon",120],["riz",70],["edamame",60],["concombre",80],["mangue",60],["soja",15]],["Cuis le riz et laisse tiédir.","Dispose thon, edamame, concombre et mangue.","Arrose de sauce soja."]],
+["f12","Curry de poulet coco","🍛","forme","din",25,[],[["poulet",140],["coco",60],["riz",60],["epinard",80],["oignon",50],["epices",0,"pâte de curry"]],["Fais revenir oignon et curry.","Ajoute le poulet en dés 5 min, puis le lait de coco.","Mijote 10 min, ajoute les épinards, sers avec le riz."]],
+["f13","Gratin de pâtes thon-brocoli","🧀","forme","din",30,[],[["pates",70],["thon",100],["brocoli",150],["creme",40],["emmental",20]],["Cuis pâtes et brocoli ensemble 8 min.","Mélange avec thon et crème dans un plat.","Emmental dessus, 15 min au four à 200 °C."]],
+["f14","Steak, purée maison & salade","🥩","forme","din",25,[],[["steak15",120,"1 steak haché"],["pdt",250],["lait",50],["beurre",5],["salade",60]],["Cuis les pommes de terre 20 min, écrase avec lait et beurre.","Cuis le steak 3 min par face.","Sers avec la salade."]],
+["f15","Quiche sans pâte aux légumes","🥧","forme","din",35,["vege"],[["oeuf",110,"2 œufs"],["lait",100],["courgette",100],["poivron",60],["emmental",25],["painc",40]],["Préchauffe à 180 °C.","Bats œufs et lait, ajoute légumes et emmental.","Cuis 25 min, sers avec le pain."]],
+["f16","Nouilles sautées au poulet","🍜","forme","din",20,[],[["nouilles",70],["poulet",120],["carotte",60],["poivron",80],["soja",20],["huile",5]],["Fais tremper les nouilles selon le paquet.","Saute poulet puis légumes au wok.","Ajoute nouilles et sauce soja, mélange 2 min."]],
+["f17","Tacos maison à la dinde","🌮","forme","din",20,[],[["tortilla",120,"2 tortillas"],["dinde",120],["poivron",60],["salade",30],["grec",50,"sauce yaourt"]],["Saute la dinde en lamelles avec épices et poivron.","Chauffe les tortillas 30 s.","Garnis avec salade et sauce yaourt."]],
+["f18","Banane & amandes","🍌","forme","col",1,["rapide","vege"],[["banane",120,"1 banane"],["amande",20]],["Une banane et une poignée d'amandes, c'est tout."]],
+["f19","Houmous & bâtonnets","🥕","forme","col",5,["rapide","vege"],[["houmous",50],["carotte",100],["concombre",80]],["Coupe les légumes en bâtonnets.","Trempe dans le houmous."]],
+["f20","Yaourt grec, miel & noix","🍯","forme","col",2,["rapide","vege"],[["grec",150],["noix",15],["miel",8]],["Yaourt, noix concassées, filet de miel."]],
+["f21","Tartine fromage frais & tomate","🍅","forme","col",3,["rapide","vege"],[["painc",40],["cottage",80],["tomate",60]],["Tartine le cottage cheese.","Ajoute la tomate, poivre et herbes."]],
+["f22","Energy balls dattes-cacao","🟤","forme","col",15,["vege"],[["dattes",40],["avoine",20],["amande",15],["cacao",5]],["Mixe tout ensemble.","Forme 4 boules, garde au frais (portion = 4 boules)."]],
+/* ---------- PRISE DE MASSE ---------- */
+["m1","Porridge XXL banane-cacahuète","🥣","masse","pdj",8,["vege"],[["avoine",90],["lait",300],["banane",120],["cacahuete",25],["miel",10]],["Cuis avoine et lait 5 min en remuant.","Ajoute la banane écrasée.","Termine avec le beurre de cacahuète et le miel."]],
+["m2","Omelette 4 œufs, jambon & pain","🍳","masse","pdj",10,["rapide"],[["oeuf",220,"4 œufs"],["jambon",60],["emmental",25],["painc",100,"3 tranches de pain complet"],["beurre",5]],["Bats les œufs, ajoute jambon en dés et emmental.","Cuis dans la poêle beurrée.","Sers avec le pain grillé."]],
+["m3","Shake gainer maison","🥤","masse","pdj",5,["rapide","vege"],[["lait",400],["avoine",60],["banane",120],["whey",30,"1 dose de whey (facultatif)"],["cacahuete",20]],["Mets tout dans le blender.","Mixe 40 secondes. Sans whey, ajoute 150 g de skyr."]],
+["m4","Pancakes protéinés & fruits","🥞","masse","pdj",15,["vege"],[["avoine",80],["oeuf",165,"3 œufs"],["skyr",150],["banane",100],["rouges",100],["miel",15],["huile",5]],["Mixe avoine, œufs, skyr et banane.","Cuis les pancakes 2 min par face.","Sers avec fruits rouges et miel."]],
+["m5","Bagel saumon-avocat","🥯","masse","pdj",8,["rapide"],[["painc",120,"1 gros pain complet / bagel"],["saumon",70],["avocat",70],["fb0",60],["oeuf",55,"1 œuf"]],["Toaste le pain.","Tartine fromage blanc et avocat.","Ajoute saumon et œuf au plat."]],
+["m6","Riz, poulet & avocat (meal prep)","🍗","masse","dej",25,[],[["poulet",180],["riz",110],["avocat",70],["brocoli",120],["huile",10]],["Cuis le riz.","Grille le poulet avec l'huile et les épices.","Cuis le brocoli 6 min, ajoute l'avocat au moment de servir."]],
+["m7","Pâtes bolo XXL","🍝","masse","dej",25,[],[["pates",130],["steak15",150,"bœuf haché 15 %"],["coulis",200],["oignon",50],["parmesan",20]],["Fais revenir l'oignon puis le bœuf.","Ajoute le coulis, mijote 15 min.","Cuis les pâtes, parmesan dessus."]],
+["m8","Burger maison & patate douce","🍔","masse","dej",30,[],[["painc",90,"1 pain burger complet"],["steak15",150],["emmental",30],["tomate",50],["salade",20],["patate",250],["huile",10]],["Rôtis la patate douce en frites 25 min à 210 °C avec l'huile.","Cuis le steak, ajoute le fromage pour qu'il fonde.","Monte le burger."]],
+["m9","Bowl saumon-riz-edamame","🍣","masse","dej",20,[],[["saumon",160],["riz",100],["edamame",100],["avocat",50],["soja",15],["mangue",60]],["Cuis le riz.","Poêle le saumon 4 min par face.","Assemble avec edamame, avocat, mangue et soja."]],
+["m10","Chili con carne complet","🌶️","masse","dej",35,[],[["boeuf5",160],["hrouges",150],["riz",100],["coulis",150],["mais",60],["oignon",50],["huile",10]],["Fais revenir oignon et bœuf dans l'huile.","Ajoute haricots, maïs, coulis et épices, mijote 20 min.","Sers avec le riz."]],
+["m11","Wraps poulet-houmous x2","🌯","masse","dej",15,["rapide"],[["tortilla",120,"2 tortillas"],["poulet",160],["houmous",50],["feta",30],["tomate",80],["salade",30]],["Grille le poulet en lamelles.","Tartine les tortillas de houmous.","Garnis poulet, feta, tomate, salade et roule."]],
+["m12","Gratin patate douce-poulet","🍠","masse","din",40,[],[["poulet",160],["patate",300],["creme",60],["emmental",30],["epinard",60]],["Préchauffe à 200 °C.","Alterne patate douce en rondelles, poulet et épinards.","Crème + emmental, 30 min au four."]],
+["m13","Pâtes pesto, poulet & parmesan","🌿","masse","din",20,["rapide"],[["pates",120],["poulet",150],["pesto",30],["parmesan",15],["tomate",80]],["Cuis les pâtes.","Poêle le poulet en dés.","Mélange tout avec le pesto, tomates cerises et parmesan."]],
+["m14","Riz cantonais maison","🍚","masse","din",20,[],[["riz",110],["oeuf",110,"2 œufs"],["jambon",80],["mais",50],["edamame",60],["soja",15],["huile",10]],["Cuis le riz (idéalement la veille).","Brouille les œufs dans l'huile, ajoute jambon et légumes.","Ajoute le riz et la sauce soja, saute 4 min."]],
+["m15","Curry pois chiches & riz","🍛","masse","din",25,["vege"],[["pchiche",200],["coco",80],["riz",100],["epinard",80],["tomate",100],["oignon",50]],["Fais revenir l'oignon et le curry.","Ajoute tomates, pois chiches, lait de coco, mijote 15 min.","Épinards à la fin, sers avec le riz."]],
+["m16","Saumon, quinoa & légumes rôtis","🐟","masse","din",30,[],[["saumon",170],["quinoa",90],["courgette",120],["poivron",100],["huile",10]],["Rôtis les légumes 20 min à 200 °C avec l'huile.","Cuis le quinoa.","Poêle le saumon 4 min par face."]],
+["m17","Steak, pâtes & haricots","🥩","masse","din",20,[],[["steak15",150],["pates",110],["hverts",150],["beurre",10]],["Cuis les pâtes et les haricots.","Cuis le steak 3 min par face.","Un peu de beurre sur les pâtes et les haricots."]],
+["m18","Shake chocolat-banane","🍫","masse","col",3,["rapide","vege"],[["lait",300],["banane",120],["cacao",10],["cacahuete",15],["whey",30,"1 dose de whey (facultatif)"]],["Mixe tout 30 secondes."]],
+["m19","Tartines beurre de cacahuète-banane","🍌","masse","col",3,["rapide","vege"],[["painc",80,"2 tranches de pain complet"],["cacahuete",30],["banane",100],["miel",10]],["Tartine le beurre de cacahuète.","Ajoute banane en rondelles et miel."]],
+["m20","Mélange fruits secs & chocolat","🥜","masse","col",1,["rapide","vege"],[["amande",30],["noix",20],["dattes",40],["choco",20]],["Mélange tout dans une boîte, idéal à emporter."]],
+["m21","Fromage blanc granola XL","🥣","masse","col",2,["rapide","vege"],[["fb0",250],["granola",60],["rouges",80],["miel",10]],["Fromage blanc, granola, fruits rouges, miel."]],
+["m22","Sandwich thon-œuf","🥪","masse","col",8,["rapide"],[["painc",100],["thon",100],["oeuf",55],["grec",30],["salade",20]],["Mélange thon et yaourt grec.","Garnis le pain avec l'œuf dur en tranches et la salade."]]];
+const REC=RAW_REC.map(([id,n,e,g,m,t,tags,ing,st])=>{let k=0,p=0,c=0,f=0;ing.forEach(([i,q])=>{const d=ING[i];k+=d[1]*q/100;p+=d[2]*q/100;c+=d[3]*q/100;f+=d[4]*q/100});
+  return {id,n,e,g,m,t,tags,ing,st,k:Math.round(k/5)*5,p:Math.round(p),c:Math.round(c),f:Math.round(f)}});
+const RECI=Object.fromEntries(REC.map(r=>[r.id,r]));
+let nG=null,nM="all",nQ="",nTag="",nPort=1;
+function NU(){if(!S.nutri)S.nutri={prof:null,fav:[],day:{date:"",meals:{pdj:[],dej:[],din:[],col:[]}}};const d=new Date().toDateString();
+  if(S.nutri.day.date!==d)S.nutri.day={date:d,meals:{pdj:[],dej:[],din:[],col:[]}};return S.nutri}
+function nTargets(){const P=NU().prof;if(!P)return null;const {sex,age,h,w,act,goal}=P;
+  const bmr=10*w+6.25*h-5*age+(sex==="h"?5:-161);const tdee=bmr*act;const bmi=w/((h/100)**2);
+  let g=goal,note="";if(age<18&&g!=="forme"){g="forme";note="Tu as moins de 18 ans : on vise l'équilibre. Ton corps grandit encore, ne fais pas de régime ni de surplus forcé sans avis d'un médecin."}
+  if(g==="perte"&&bmi<18.5){g="forme";note="Ton IMC est déjà bas : pas de perte de poids conseillée. Parle-en à un médecin si besoin."}
+  let kcal=g==="perte"?tdee*0.8:g==="masse"?tdee*1.1:tdee;const floor=sex==="h"?1500:1200;if(kcal<Math.max(floor,bmr))kcal=Math.max(floor,bmr);
+  const prot=Math.round(w*(g==="perte"?2:g==="masse"?1.8:1.6)),fat=Math.round(kcal*0.28/9),carb=Math.max(0,Math.round((kcal-prot*4-fat*9)/4));
+  return {kcal:Math.round(kcal/10)*10,prot,fat,carb,g,note,teen:age<18}}
+function nDayTot(){const M=NU().day.meals;let k=0,p=0,c=0,f=0;Object.values(M).forEach(a=>a.forEach(([id,x])=>{const r=RECI[id];if(!r)return;k+=r.k*x;p+=r.p*x;c+=r.c*x;f+=r.f*x}));return {k:Math.round(k),p:Math.round(p),c:Math.round(c),f:Math.round(f)}}
+function nBar(v,max,col){const pc=max?Math.min(100,Math.round(v/max*100)):0;return `<div style="height:7px;background:var(--card2);border-radius:9px;overflow:hidden;margin-top:4px"><div style="width:${pc}%;height:100%;background:${col};border-radius:9px"></div></div>`}
+function nCard(r){const fav=NU().fav.includes(r.id);return `<div class="rcard" onclick="openRec('${r.id}')"><div class="rimg g-${r.g}"><span>${r.e}</span>${fav?'<i>♥</i>':''}<b>${r.t} min</b></div>
+  <div class="rbody"><div class="rname">${r.n}</div><div class="mut">${r.k} kcal · ${r.p} g prot.</div></div></div>`}
+function vNutri(){const N=NU(),T=nTargets(),D=nDayTot();
+  const goal=nG===null?(T?T.g:"all"):nG;const q=nQ.trim().toLowerCase();
+  const list=REC.filter(r=>(goal==="all"||r.g===goal)&&(nM==="all"||nM==="fav"?true:r.m===nM)&&(nM!=="fav"||N.fav.includes(r.id))&&(!nTag||r.tags.includes(nTag))&&(!q||(r.n+" "+r.ing.map(i=>ING[i[0]][0]).join(" ")).toLowerCase().includes(q)));
+  const head=T?`<div class="card"><div class="row between"><h3 style="font-size:20px">${NG_ICO[T.g]} Ma journée</h3><button class="pill" onclick="openNProfile()">Modifier</button></div>
+    ${T.teen?`<p class="mut" style="margin:6px 0 0">Choisis des repas variés et complets, sans compter les calories.</p>`:`<div class="row between" style="margin-top:8px"><span><b class="big" style="font-size:28px">${D.k}</b> <span class="mut">/ ${T.kcal} kcal</span></span><span class="mut">${NG[T.g]}</span></div>${nBar(D.k,T.kcal,"var(--acc)")}
+    <div class="grid3" style="margin-top:10px">${[["Protéines",D.p,T.prot,"#4fc3f7"],["Glucides",D.c,T.carb,"#e9b949"],["Lipides",D.f,T.fat,"#ef6f8f"]].map(([l,v,m,c])=>`<div><div class="mut">${l}</div><b>${v}</b><span class="mut"> / ${m} g</span>${nBar(v,m,c)}</div>`).join("")}</div>`}
+    ${T.note?`<p class="mut" style="margin:10px 0 0">ℹ️ ${T.note}</p>`:""}
+    <div class="meals">${Object.keys(NM).map(m=>{const a=N.day.meals[m];return `<div class="meal"><div class="row between"><b>${NM_ICO[m]} ${NM[m]}</b><button class="pill" onclick="nM='${m}';render()">+ Ajouter</button></div>
+      ${a.length?a.map(([id,x],i)=>{const r=RECI[id];return r?`<div class="row between mitem"><span onclick="openRec('${id}')">${r.e} ${r.n}${x!==1?` <span class="mut">×${x}</span>`:""}</span><span class="row" style="gap:6px"><span class="mut">${Math.round(r.k*x)} kcal</span><button class="xbtn" onclick="nDel('${m}',${i})">✕</button></span></div>`:""}).join(""):`<div class="mut">Rien pour l'instant</div>`}</div>`}).join("")}</div></div>`
+   :`<div class="card" style="border-color:var(--acc)"><h3 style="font-size:20px">🎯 Calcule tes besoins</h3><p class="mut">Réponds à 6 questions et l'appli calcule tes calories et protéines par jour selon ton objectif.</p><button class="btn" onclick="openNProfile()">C'est parti</button></div>`;
+  return head+`<div class="tabs">${[["all","🍽️ Tous"],...Object.keys(NG).map(g=>[g,NG_ICO[g]+" "+NG[g]])].map(([g,l])=>`<button class="${goal===g?'on':''}" onclick="nG='${g}';render()">${l}</button>`).join("")}</div>
+  <div class="tabs">${[["all","Tous les repas"],...Object.keys(NM).map(m=>[m,NM_ICO[m]+" "+NM[m]]),["fav","♥ Favoris"]].map(([m,l])=>`<button class="${nM===m?'on':''}" onclick="nM='${m}';render()">${l}</button>`).join("")}</div>
+  <div class="row" style="gap:8px;margin-bottom:10px"><input id="nSearch" placeholder="🔍 Recette ou ingrédient…" value="${esc(nQ)}" oninput="nQ=this.value;renderNutriList()" style="flex:1">
+   <button class="pill ${nTag==='rapide'?'on':''}" onclick="nTag=nTag==='rapide'?'':'rapide';render()">⚡ Rapide</button><button class="pill ${nTag==='vege'?'on':''}" onclick="nTag=nTag==='vege'?'':'vege';render()">🌱 Végé</button></div>
+  <div class="mut" id="nCount" style="margin:0 0 8px 2px">${list.length} recette${list.length>1?"s":""}</div><div class="rgrid" id="nList">${list.map(nCard).join("")||`<div class="card empty" style="grid-column:1/-1">Aucune recette trouvée</div>`}</div>
+  <p class="mut" style="margin-top:14px;font-size:11px">Valeurs nutritionnelles calculées à partir de valeurs moyennes des ingrédients (type tables CIQUAL), à titre indicatif. Besoins : équation de Mifflin-St Jeor (1990) ; protéines selon l'ISSN (2017) et Morton et al. (2018). Ce n'est pas un avis médical : en cas de problème de santé, de grossesse ou de moins de 18 ans, demande l'avis d'un médecin ou d'un diététicien.</p>`}
+function renderNutriList(){const el=document.getElementById("nList");if(!el)return;const y=window.scrollY;render();window.scrollTo(0,y);const s=document.getElementById("nSearch");if(s){s.focus();s.setSelectionRange(s.value.length,s.value.length)}}
+function openRec(id){const r=RECI[id];if(!r)return;nPort=1;recModal(r)}
+function recModal(r){const fav=NU().fav.includes(r.id),x=nPort;
+  modal(`<div class="rhero g-${r.g}"><span>${r.e}</span></div><h2 style="margin-top:10px">${r.n}</h2>
+  <div class="mut">${NG_ICO[r.g]} ${NG[r.g]} · ${NM_ICO[r.m]} ${NM[r.m]} · ⏱ ${r.t} min${r.tags.includes("vege")?" · 🌱 Végé":""}</div>
+  <div class="grid4">${[["kcal",Math.round(r.k*x)],["Prot.",Math.round(r.p*x)+" g"],["Gluc.",Math.round(r.c*x)+" g"],["Lip.",Math.round(r.f*x)+" g"]].map(([l,v])=>`<div class="stat"><b>${v}</b><div class="mut">${l}</div></div>`).join("")}</div>
+  <div class="row between" style="margin:6px 0 10px"><span class="mut">Portion</span><div class="row" style="gap:4px">${[0.75,1,1.25,1.5].map(p=>`<button class="pill ${p===x?'on':''}" onclick="nPort=${p};recModal(RECI['${r.id}'])">×${p}</button>`).join("")}</div></div>
+  <h3>Ingrédients</h3><ul class="ilist">${r.ing.map(([i,q,lab])=>`<li>${q===0?(lab||ING[i][0]):(x===1&&lab)?lab:Math.round(q*x)+" g de "+ING[i][0]}</li>`).join("")}</ul>
+  <h3>Préparation</h3><ol class="slist">${r.st.map(s=>`<li>${s}</li>`).join("")}</ol>
+  <div class="mut" style="margin:6px 0 10px">Ajouter à ma journée :</div>
+  <div class="grid2">${Object.keys(NM).map(m=>`<button class="btn ${m===r.m?'':'sec'}" onclick="nAdd('${r.id}','${m}')">${NM_ICO[m]} ${NM[m]}</button>`).join("")}</div>
+  <div style="height:8px"></div><button class="btn sec" onclick="nFav('${r.id}')">${fav?"♥ Retirer des favoris":"♡ Ajouter aux favoris"}</button>
+  <div style="height:8px"></div><button class="btn sec" onclick="closeModal()">Fermer</button>`)}
+function nAdd(id,m){const N=NU();N.day.meals[m].push([id,nPort]);save();closeModal();if(!N.prof){toast("Ajouté ✅ Calcule tes besoins pour suivre ta journée")}else toast("Ajouté à "+NM[m]+" ✅");nM="all";render()}
+function nDel(m,i){NU().day.meals[m].splice(i,1);save();render()}
+function nFav(id){const f=NU().fav,i=f.indexOf(id);i<0?f.push(id):f.splice(i,1);save();openRec(id);render()}
+function openNProfile(){const P=NU().prof||{sex:"h",age:"",h:"",w:"",act:1.55,goal:"forme"};
+  modal(`<h2>🎯 Mes besoins</h2><p class="mut">Ces infos restent sur ton téléphone.</p>
+  <label class="mut">Sexe</label><div class="grid2" style="margin:4px 0 10px">${[["h","Homme"],["f","Femme"]].map(([v,l])=>`<button class="btn ${P.sex===v?'':'sec'}" onclick="nSet('sex','${v}')">${l}</button>`).join("")}</div>
+  <div class="grid3"><div><label class="mut">Âge</label><input id="npAge" type="number" inputmode="numeric" value="${P.age}" placeholder="ans"></div><div><label class="mut">Taille</label><input id="npH" type="number" inputmode="numeric" value="${P.h}" placeholder="cm"></div><div><label class="mut">Poids</label><input id="npW" type="number" inputmode="decimal" value="${P.w}" placeholder="kg"></div></div>
+  <label class="mut" style="display:block;margin-top:10px">Activité</label>${[[1.2,"Peu actif","bureau, peu de sport"],[1.375,"Légèrement actif","1-2 séances / semaine"],[1.55,"Actif","3-4 séances / semaine"],[1.725,"Très actif","5+ séances ou métier physique"]].map(([v,l,d])=>`<div class="exitem ${P.act===v?'sel':''}" onclick="nSet('act',${v})"><div class="grow"><b>${l}</b><div class="mut">${d}</div></div>${P.act===v?"✅":""}</div>`).join("")}
+  <label class="mut" style="display:block;margin-top:10px">Objectif</label><div class="grid3" style="margin-top:4px">${Object.keys(NG).map(g=>`<button class="btn ${P.goal===g?'':'sec'}" style="padding:10px 4px;font-size:13px" onclick="nSet('goal','${g}')">${NG_ICO[g]}<br>${NG[g]}</button>`).join("")}</div>
+  <div style="height:12px"></div><button class="btn" onclick="nSaveProf()">Calculer</button>`);window._np=P}
+function nSet(k,v){const P=window._np;P.age=document.getElementById("npAge").value;P.h=document.getElementById("npH").value;P.w=document.getElementById("npW").value;P[k]=v;const keep=NU().prof;NU().prof=P;openNProfile();NU().prof=keep}
+function nSaveProf(){const P=window._np,age=+document.getElementById("npAge").value,h=+document.getElementById("npH").value,w=+String(document.getElementById("npW").value).replace(",",".");
+  if(!(age>=13&&age<=100)){toast("Âge entre 13 et 100 ans");return}if(!(h>=120&&h<=230)){toast("Taille en cm (ex : 175)");return}if(!(w>=30&&w<=250)){toast("Poids en kg (ex : 70)");return}
+  NU().prof={sex:P.sex,age,h,w,act:P.act,goal:P.goal};nG=null;save();closeModal();render();const T=nTargets();toast(T.teen?"✅ Profil enregistré":`🎯 ${T.kcal} kcal · ${T.prot} g de protéines par jour`)}
+
 refreshPlanSession();
 render();initFriends();if(!S.onboarded){if(S.sessions.length){S.onboarded=true;save()}else onboarding()}
 </script>
