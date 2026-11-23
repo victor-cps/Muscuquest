@@ -2039,6 +2039,81 @@ function openWOpts(){wInModal=true;modal(`<h2>⚙️ Réglages de ma semaine</h2
 function wUseDay(d){const W=WK(),N=NU();N.day.meals={pdj:[],dej:[],din:[],col:[]};W.days[d].forEach(x=>N.day.meals[x.m].push([x.id,x.x]));save();nView="recettes";render();window.scrollTo(0,0);toast("✅ C'est noté pour aujourd'hui")}
 function nAdd(id,m){const N=NU();N.day.meals[m].push([id,nPort]);save();closeModal();toast("✅ Ajouté à ton "+NM[m].toLowerCase());render()}
 
+/* ================== AMIS EN LIGNE PAR PSEUDO (Firebase) ================== */
+const FBC={apiKey:"AIzaSyAxi4N0SOuVOjIRsGi_c5fP1On1xAnSRh0",authDomain:"muscuquest.firebaseapp.com",projectId:"muscuquest",storageBucket:"muscuquest.firebasestorage.app",messagingSenderId:"472111318814",appId:"1:472111318814:web:3a5d3d48260191aecdab0f"};
+const PAL={on:false,state:"off",uid:null,me:null,db:null,fr:{},frIds:[],reqIn:[],reqOut:[],unsub:[],last:"",t:null,seenReq:null,err:""};
+function palLoad(src){return new Promise((ok,ko)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=ko;document.head.appendChild(s)})}
+async function palInit(){if(window.claude&&window.claude.use)return;PAL.on=true;PAL.state="loading";
+  try{const b="https://www.gstatic.com/firebasejs/10.14.1/";await palLoad(b+"firebase-app-compat.js");await Promise.all([palLoad(b+"firebase-auth-compat.js"),palLoad(b+"firebase-firestore-compat.js")]);
+    if(!firebase.apps.length)firebase.initializeApp(FBC);PAL.db=firebase.firestore();const auth=firebase.auth();
+    await new Promise(r=>{const u=auth.onAuthStateChanged(()=>{u();r()})});if(!auth.currentUser)await auth.signInAnonymously();
+    PAL.uid=auth.currentUser.uid;const d=await PAL.db.doc("users/"+PAL.uid).get();PAL.me=d.exists?d.data():null;PAL.state="ok";if(PAL.me){palListen();palPush()}}
+  catch(e){PAL.state="err";PAL.err=(e&&(e.code||e.message))||""}
+  if(tab==="fr")render()}
+function palDocMe(){const f=myFriendDoc();return {p:PAL.me.p,pl:PAL.me.pl,lvl:Math.max(1,Math.min(999,f.lvl|0)),wx:Math.max(0,Math.min(100000,f.weekXp|0)),wk:f.week|0,cls:String(S.cls||"").slice(0,20),at:Date.now()}}
+async function palPush(){if(!PAL.me||!PAL.db)return;const d=palDocMe();const sig=JSON.stringify({...d,at:0});if(sig===PAL.last)return;PAL.last=sig;
+  try{await PAL.db.doc("users/"+PAL.uid).set(d);PAL.me=d}catch(e){PAL.last=""}}
+function palPushSoon(){if(!PAL.me)return;clearTimeout(PAL.t);PAL.t=setTimeout(palPush,4000)}
+function palListen(){PAL.unsub.forEach(u=>u());PAL.unsub=[];const db=PAL.db,me=PAL.uid;
+  PAL.unsub.push(db.collection("users/"+me+"/friends").onSnapshot(s=>{PAL.frIds=s.docs.map(d=>d.id);
+    PAL.frIds.forEach(id=>{if(!PAL.fr[id]){PAL.fr[id]={p:"…",lvl:1,wx:0,wk:0};PAL.unsub.push(db.doc("users/"+id).onSnapshot(u=>{PAL.fr[id]=u.exists?u.data():{p:"(compte supprimé)",lvl:1,wx:0,wk:0,gone:1};if(tab==="fr")render()},()=>{}))}});
+    if(tab==="fr")render()},()=>{}));
+  PAL.unsub.push(db.collection("requests").where("to","==",me).onSnapshot(s=>{PAL.reqIn=s.docs.map(d=>d.data());
+    const ids=PAL.reqIn.map(r=>r.from).join();if(PAL.seenReq!==null&&PAL.reqIn.length&&ids!==PAL.seenReq)toast("👋 "+PAL.reqIn[0].fp+" veut être ton ami !");PAL.seenReq=ids;render()},()=>{}));
+  PAL.unsub.push(db.collection("requests").where("from","==",me).onSnapshot(s=>{PAL.reqOut=s.docs.map(d=>d.data());if(tab==="fr")render()},()=>{}))}
+const palOk=p=>/^[A-Za-z0-9_.]{3,16}$/.test(p);
+async function palSetName(){const el=document.getElementById("palName");const p=(el.value||"").trim().replace(/^@/,"");
+  if(!palOk(p)){toast("3 à 16 caractères : lettres, chiffres, _ ou .");return}const pl=p.toLowerCase(),db=PAL.db;
+  try{const n=await db.doc("names/"+pl).get();if(n.exists&&n.data().uid!==PAL.uid){toast("❌ Ce pseudo est déjà pris");return}
+    const old=PAL.me&&PAL.me.pl;PAL.me={p,pl};const d=palDocMe();const b=db.batch();
+    if(!n.exists)b.set(db.doc("names/"+pl),{uid:PAL.uid});b.set(db.doc("users/"+PAL.uid),d);if(old&&old!==pl)b.delete(db.doc("names/"+old));
+    await b.commit();PAL.me=d;PAL.last=JSON.stringify({...d,at:0});closeModal();palListen();render();toast("✅ Tu es @"+p)}
+  catch(e){PAL.me=null;toast("Erreur : vérifie ta connexion");console.warn(e)}}
+async function palAdd(){const el=document.getElementById("palFind");const p=(el.value||"").trim().replace(/^@/,"");if(!p)return;
+  if(!palOk(p)){toast("Pseudo invalide");return}const pl=p.toLowerCase(),db=PAL.db;
+  if(pl===PAL.me.pl){toast("C'est toi 😄");return}
+  try{const n=await db.doc("names/"+pl).get();if(!n.exists){toast("❌ Aucun joueur avec ce pseudo");return}const to=n.data().uid;
+    if(PAL.frIds.includes(to)){toast("Vous êtes déjà amis 🤝");return}
+    if(PAL.reqIn.some(r=>r.from===to)){await palAccept(to);return}
+    if(PAL.reqOut.some(r=>r.to===to)){toast("Demande déjà envoyée ⏳");return}
+    await db.doc("requests/"+to+"_"+PAL.uid).set({from:PAL.uid,to,fp:PAL.me.p,at:Date.now()});PAL.sent=PAL.sent||{};PAL.sent[to]=p;el.value="";toast("📨 Demande envoyée à @"+p)}
+  catch(e){toast("Erreur : vérifie ta connexion");console.warn(e)}}
+async function palAccept(from){const db=PAL.db,me=PAL.uid,b=db.batch();b.set(db.doc("users/"+me+"/friends/"+from),{at:Date.now()});b.set(db.doc("users/"+from+"/friends/"+me),{at:Date.now()});b.delete(db.doc("requests/"+me+"_"+from));
+  try{await b.commit();toast("🤝 Nouvel ami !")}catch(e){toast("Erreur, réessaie");console.warn(e)}}
+async function palRefuse(from){try{await PAL.db.doc("requests/"+PAL.uid+"_"+from).delete()}catch(e){}}
+async function palCancel(to){try{await PAL.db.doc("requests/"+to+"_"+PAL.uid).delete()}catch(e){}}
+function palAskRemove(id){const f=PAL.fr[id]||{};modal(`<h2>Retirer @${esc(f.p||"?")} ?</h2><p class="mut">Vous ne serez plus dans le classement l'un de l'autre.</p><div class="row"><button class="btn sec" onclick="closeModal()">Annuler</button><button class="btn danger" onclick="palRemove('${id}')">Retirer</button></div>`)}
+async function palRemove(id){const db=PAL.db,b=db.batch();b.delete(db.doc("users/"+PAL.uid+"/friends/"+id));b.delete(db.doc("users/"+id+"/friends/"+PAL.uid));
+  try{await b.commit();delete PAL.fr[id];closeModal();toast("Ami retiré")}catch(e){toast("Erreur, réessaie")}}
+function palShare(){const t="Ajoute-moi en ami sur MuscuQuest 💪 Mon pseudo : @"+PAL.me.p+"\nhttps://victor-cps.github.io/Muscuquest/";
+  if(navigator.share)navigator.share({text:t}).catch(()=>{});else if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>toast("📋 Copié"),()=>{})}
+function palNameModal(){const cur=PAL.me?PAL.me.p:"";modal(`<h2>${cur?"Changer de pseudo":"Choisis ton pseudo"}</h2>
+  <p class="mut">Tes amis te trouveront avec. 3 à 16 caractères : lettres, chiffres, _ ou point.<br>⚠️ Évite ton vrai nom complet : ton pseudo, ton niveau et tes XP de la semaine sont visibles par les joueurs.</p>
+  <input id="palName" maxlength="16" autocapitalize="off" autocomplete="off" placeholder="ex : TitanDu93" value="${esc(cur)}"><div style="height:10px"></div>
+  <button class="btn" onclick="palSetName()">✅ Valider</button>${cur?`<div style="height:8px"></div><button class="btn danger" onclick="palAskDelete()">Supprimer mon compte en ligne</button>`:""}<div style="height:8px"></div><button class="btn sec" onclick="closeModal()">Annuler</button>`);
+  setTimeout(()=>{const e=document.getElementById("palName");if(e)e.focus()},100)}
+function palAskDelete(){modal(`<h2>Supprimer ton compte en ligne ?</h2><p class="mut">Ton pseudo, tes amis et tes demandes seront effacés. Tes séances restent sur ton téléphone.</p><div class="row"><button class="btn sec" onclick="closeModal()">Annuler</button><button class="btn danger" onclick="palDelete()">Supprimer</button></div>`)}
+async function palDelete(){const db=PAL.db,me=PAL.uid;try{const b=db.batch();PAL.frIds.forEach(id=>{b.delete(db.doc("users/"+me+"/friends/"+id));b.delete(db.doc("users/"+id+"/friends/"+me))});
+  PAL.reqIn.forEach(r=>b.delete(db.doc("requests/"+me+"_"+r.from)));PAL.reqOut.forEach(r=>b.delete(db.doc("requests/"+r.to+"_"+me)));b.delete(db.doc("names/"+PAL.me.pl));b.delete(db.doc("users/"+me));await b.commit();
+  PAL.unsub.forEach(u=>u());PAL.unsub=[];PAL.me=null;PAL.fr={};PAL.frIds=[];PAL.reqIn=[];PAL.reqOut=[];closeModal();render();toast("Compte en ligne supprimé")}catch(e){toast("Erreur, réessaie")}}
+function palSection(){
+  if(PAL.state==="loading")return `<div class="card"><h3 style="font-size:20px">👥 Mes amis</h3><p class="mut">Connexion…</p></div>`;
+  if(PAL.state!=="ok")return `<div class="card"><h3 style="font-size:20px">👥 Mes amis</h3><p class="mut">Connecte-toi à internet pour voir tes amis.</p><button class="btn sec" onclick="palInit()">Réessayer</button></div>`;
+  if(!PAL.me)return `<div class="card" style="border-color:var(--acc)"><h3 style="font-size:20px">👥 Joue avec tes potes</h3><p class="mut">Choisis un pseudo, ajoute tes amis avec le leur, et comparez vos XP chaque semaine.</p><button class="btn" onclick="palNameModal()">Choisir mon pseudo</button></div>`;
+  const ws=weekStart(),meRow={p:PAL.me.p,lvl:PAL.me.lvl,wx:myFriendDoc().weekXp,me:1};
+  const rows=[meRow,...PAL.frIds.map(id=>{const f=PAL.fr[id]||{};return {id,p:f.p||"…",lvl:f.lvl||1,wx:f.wk===ws?(f.wx||0):0,cls:f.cls}})].sort((a,b)=>b.wx-a.wx);
+  return `${PAL.reqIn.length?`<div class="card" style="border-color:var(--acc)"><h3 style="font-size:18px">👋 Demandes d'ami</h3>${PAL.reqIn.map(r=>`<div class="exitem"><div class="grow"><b>@${esc(r.fp)}</b><div class="mut">veut être ton ami</div></div><button class="btn sm" onclick="palAccept('${r.from}')">Accepter</button><button class="xbtn" style="font-size:16px" onclick="palRefuse('${r.from}')">✕</button></div>`).join("")}</div>`:""}
+  <div class="card"><div class="row between"><h3 style="font-size:20px">👥 Classement entre amis</h3><button class="pill" onclick="palNameModal()">@${esc(PAL.me.p)}</button></div>
+   <div class="mut" style="margin:2px 0 8px">XP gagnés cette semaine</div>
+   ${rows.map((b,i)=>`<div class="lb ${b.me?'me':''}" ${b.me?"":`onclick="palAskRemove('${b.id}')"`}><span class="r">${i+1}</span><span style="flex:1">${["🥇","🥈","🥉"][i]||"💪"} ${esc(b.p)}${b.me?" (toi)":""} <span class="mut" style="font-size:12px">niv ${b.lvl}${b.cls&&CLASSES[b.cls]?" "+CLASSES[b.cls].e:""}</span></span><b>${b.wx} XP</b></div>`).join("")}
+   ${PAL.frIds.length?"":`<p class="mut" style="margin:8px 0 0">Ajoute ton premier ami avec son pseudo 👇</p>`}
+   <div class="row" style="gap:6px;margin-top:10px"><input id="palFind" placeholder="Pseudo d'un ami" autocapitalize="off" autocomplete="off" style="flex:1;min-width:0" onkeydown="if(event.key==='Enter')palAdd()"><button class="btn sm" style="width:auto;padding:10px 14px" onclick="palAdd()">Ajouter</button></div>
+   ${PAL.reqOut.length?`<div class="mut" style="margin-top:8px">⏳ En attente : ${PAL.reqOut.map(r=>`<span class="pill" onclick="palCancel('${r.to}')">${esc((PAL.sent||{})[r.to]||"demande envoyée")} ✕</span>`).join("")}</div>`:""}
+   <div style="height:8px"></div><button class="btn sec" onclick="palShare()">📤 Partager mon pseudo</button></div>`}
+{const _fs=friendsSection;friendsSection=function(){return PAL.on?palSection():_fs()};}
+{const _sv=save;save=function(){const r=_sv.apply(this,arguments);try{palPushSoon()}catch(e){}return r};}
+palInit();
+
 refreshPlanSession();
 render();initFriends();if(!S.onboarded){if(S.sessions.length){S.onboarded=true;save()}else onboarding()}
 </script>
