@@ -128,6 +128,9 @@ nav button.on{color:var(--acc)}nav button svg{width:22px;height:22px}
 .meals{margin-top:12px}.meal{border-top:1px solid var(--line);padding:9px 0}.mitem{padding:5px 0 0;font-size:14px;cursor:pointer}
 .xbtn{background:none;color:var(--mut);font-size:13px;padding:0 4px}
 .ilist,.slist{margin:6px 0 14px;padding-left:20px;line-height:1.6}.slist li{margin-bottom:4px}
+.seg{display:flex;background:var(--card2);border-radius:12px;padding:3px;margin-bottom:12px}.seg button{flex:1;padding:9px 4px;border-radius:9px;font-size:13px;color:var(--mut);font-weight:600}.seg button.on{background:var(--acc);color:#140a02}
+.wrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}.wrow .grow{flex:1;min-width:0}.wimg{width:58px;height:58px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;font-size:28px}
+.shop{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.shop input{width:20px;height:20px;accent-color:var(--acc);flex:none}.shop.done span{text-decoration:line-through;color:var(--mut)}
 .pill.on{background:var(--acc);color:#140a02;border-color:var(--acc);font-weight:600}.exitem.sel{background:var(--card2);border-radius:10px;padding-left:8px}
 </style>
 </head>
@@ -344,7 +347,7 @@ let tab="home";
 function go(t){tab=t;render();window.scrollTo(0,0)}
 function renderNav(){document.getElementById("nav").innerHTML=TABS.map(([id,e,l])=>`<button class="${tab===id?'on':''}" onclick="go('${id}')"><b>${e}</b>${l}</button>`).join("")}
 function render(){renderNav();const a=document.getElementById("app");
-  a.innerHTML=`<header class="top"><h1>Muscu<span>Quest</span></h1><div class="row" style="gap:6px"><button class="pill" style="position:relative;font-size:15px;padding:5px 10px" onclick="openNotifs()">🔔${(()=>{const n=unread();return n?`<span class="nb">${n}</span>`:""})()}</button><button class="pill" style="font-size:15px;padding:5px 10px;${S.premium?'border-color:var(--gold)':''}" onclick="openPremium()" ${FREE?"hidden":""}>👑</button><button class="pill" onclick="openSettings()">⚙️</button></div></header>`+({home:vHome,work:vWork,lib:vLib,nutri:vNutri,prog:vProg,fr:vFr}[tab])();
+  a.innerHTML=`<header class="top"><h1>Muscu<span>Quest</span></h1><div class="row" style="gap:6px"><button class="pill" style="position:relative;font-size:15px;padding:5px 10px" onclick="openNotifs()">🔔${(()=>{const n=unread();return n?`<span class="nb">${n}</span>`:""})()}</button><button class="pill" style="font-size:15px;padding:5px 10px;${S.premium?'border-color:var(--gold)':''}" onclick="openPremium()" ${FREE?"hidden":""}>👑</button><button class="pill" onclick="openSettings()">⚙️</button></div></header>`+({home:vHome,work:vWork,lib:vLib,nutri:vNutri2,prog:vProg,fr:vFr}[tab])();
   if(tab==="prog"&&progTab==="perf")drawChart();if(tab==="prog"&&progTab==="body")drawLine("bodyChart",S.body.filter(x=>x.w).map(x=>x.w));
 }
 
@@ -1728,7 +1731,7 @@ function headerHTML(){const n=unread();return `<header class="top"><h1>Muscu<spa
   <button class="iconbtn" aria-label="Premium" ${FREE?'hidden':''} style="${S.premium?'color:var(--gold)':''}" onclick="openPremium()">${svgI("crown")}</button>
   <button class="iconbtn" aria-label="Réglages" onclick="openSettings()">${svgI("gear")}</button></div></header>`}
 function render(){renderNav();const a=document.getElementById("app");
-  a.innerHTML=headerHTML()+({home:vHome,work:vWork,lib:vLib,nutri:vNutri,prog:vProg,fr:vFr}[tab])();
+  a.innerHTML=headerHTML()+({home:vHome,work:vWork,lib:vLib,nutri:vNutri2,prog:vProg,fr:vFr}[tab])();
   if(tab==="prog"&&progTab==="perf")drawChart();if(tab==="prog"&&progTab==="body")drawLine("bodyChart",S.body.filter(x=>x.w).map(x=>x.w));}
 function vHome(){const L=levelInfo(S.xp),q=quests(),sk=streaks(),CL=CLASSES[S.cls],b=bossInfo(),n=planNext();
   const cta=S.active?`<button class="btn" onclick="go('work')">Reprendre ma séance</button>`:n&&!n.finished?`<button class="btn" onclick="startPlanDay()">Commencer : ${esc(n.day.n)}</button><div class="mut" style="text-align:center;margin-top:6px;font-size:13px">${esc(n.p.n)} · semaine ${n.week}/${n.p.weeks}</div>`:`<button class="btn" onclick="go('work')">Commencer une séance</button>`;
@@ -1870,6 +1873,61 @@ const RECI=Object.fromEntries(REC.map(r=>[r.id,r]));
 const RIMG={"p1":"1692071106919-01bc0b9b0919","p2":"1677844592730-ce9c936d8f1a","p3":"1559329607-43c470fd9aac","p4":"1525351484163-7529414344d8","p5":"1593450298197-e6031f033a44","p6":"1604497198754-a2183225cdc4","p7":"1685079253777-61c2c0de2956","p8":"1762631882592-25bc08678af6","p9":"1790701909034-6c7b45c7b58a","p10":"1778168199427-4e839943d20f","p11":"1788604619692-120407b7207c","p12":"1788490099234-0e8c6b5255d0","p13":"1665593998976-d957f2827fe7","p14":"1649434150059-13fee33e1de4","p15":"1606070781631-a7e961f84c9e","p16":"1766146431872-a4472ccd3889","p17":"1546069901-ba9599a7e63c","p18":"1572269852948-434ae794bb1b","p19":"1640458348210-6c46cc136f18","p20":"1570639518322-96c1d2f28f86","f1":"1763686483398-730a9555b3f5","f2":"1528207776546-365bb710ee93","f3":"1465014925804-7b9ede58d0d7","f4":"1552842016-443bcee0667b","f5":"1685967836529-b0e8d6938227","f6":"1772693471187-6e7d364f99ee","f7":"1761545832779-bc0b4290fc5e","f8":"1623428187969-5da2dcea5ebf","f9":"1676300185165-3f543c1fcb72","f10":"1771074168439-0083aaac48e7","f11":"1670816978291-a5cf23d87968","f12":"1708782344490-9026aaa5eec7","f13":"1768204039572-9e62db7b39fd","f14":"1723511413901-99439b957bbf","f15":"1767065584177-9ceb902eec7a","f16":"1585032226651-759b368d7246","f17":"1599974579688-8dbdd335c77f","f18":"1649431473478-2768c3f21c6d","f19":"1753364547864-679728b22c31","f20":"1633893215265-4763142f9b57","f21":"1634234498278-b01fbf12bf4c","m1":"1598259298632-e785684cfa90","m2":"1563690449029-d6e1b8d6003d","m3":"1707219811295-0f283760668b","m4":"1612182062633-9ff3b3598e96","m5":"1727245243403-b177f3670c2e","m6":"1666819691716-827f78d892f3","m7":"1621996346565-e3dbc646d9a9","m8":"1561758033-d89a9ad46330","m9":"1638502182261-7be714a565ce","m10":"1729450412050-6c00ec592e34","m11":"1626700051175-6818013e1d4f","m12":"1684950888991-224571bf3910","m13":"1766706519060-d44bd9dc50f7","m14":"1603133872878-684f208fb84b","m15":"1596560314766-08c0c6890024","m16":"1611599537845-1c7aca0091c0","m17":"1791202978575-21e01ab3a6e5","m18":"1572490122747-3968b75cc699","m19":"1610858631025-0f2d6b6e773b","m20":"1767877609689-beff32b9c0ac","m21":"1610441009633-b6ca9c6d4be2","m22":"1672078857105-a1229a7033b8"};
 const rPh=(id,w)=>RIMG[id]?` ph" style="background-image:url(https://images.unsplash.com/photo-${RIMG[id]}?w=${w}&q=70&auto=format&fit=crop)`:"";
 let nG=null,nM="all",nQ="",nTag="",nPort=1;
+/* ================== PLAN DE LA SEMAINE + COURSES ================== */
+let nView="jour",wDay=(new Date().getDay()+6)%7;
+const WD=["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"],WDL=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+const ICAT={"🥦 Fruits & légumes":["banane","pomme","rouges","kiwi","mangue","avocat","patate","pdt","brocoli","courgette","epinard","tomate","poivron","oignon","salade","concombre","champi","hverts","carotte","mais","edamame","dattes"],
+ "🍗 Viandes, poissons & œufs":["poulet","dinde","boeuf5","steak15","saumon","cabillaud","crevette","jambon","oeuf","blanc","tofu"],
+ "🥛 Produits laitiers":["lait","skyr","fb0","grec","feta","mozza","parmesan","emmental","creme","cottage","beurre"],
+ "🍚 Féculents & pain":["avoine","riz","pates","quinoa","semoule","nouilles","tortilla","galette","painc","lentilles","pchiche","hrouges"],
+ "🫙 Épicerie":["thon","sardine","cacahuete","miel","huile","amande","noix","choco","whey","soja","pesto","coulis","houmous","granola","coco","chia","cacao"]};
+function WK(){const N=NU();if(!N.week)N.week={days:null,train:[1,0,1,0,1,0,0],veg:0,fast:0,shop:{},made:0};return N.week}
+function wTargets(){const T=nTargets(),W=WK();if(!T||T.teen)return WD.map(()=>null);const nt=W.train.filter(Boolean).length,nr=7-nt;
+  const plus=150,minus=nr?Math.round(plus*nt/nr):0;return W.train.map(t=>T.kcal+(t?plus:-minus))}
+function wPool(g,m){const W=WK();let p=REC.filter(r=>r.g===g&&r.m===m&&(!W.veg||r.tags.includes("vege"))&&(!W.fast||r.t<=15));
+  if(p.length<3)p=REC.filter(r=>r.g===g&&r.m===m&&(!W.veg||r.tags.includes("vege")));if(p.length<2)p=REC.filter(r=>r.g===g&&r.m===m);return p}
+function wPick(g,m,used,avoid){const pool=wPool(g,m);let c=pool.filter(r=>(used[r.id]||0)<2&&r.id!==avoid);if(!c.length)c=pool.filter(r=>r.id!==avoid);if(!c.length)c=pool;
+  const fav=NU().fav;c=c.flatMap(r=>fav.includes(r.id)?[r,r,r]:[r]);return c[Math.floor(Math.random()*c.length)]}
+function wScale(day,target){if(!target)return day.forEach(x=>x.x=1);const base=day.reduce((a,x)=>a+RECI[x.id].k,0);
+  let f=target/base;f=Math.min(1.5,Math.max(0.75,Math.round(f*4)/4));day.forEach(x=>x.x=f)}
+function wGen(){const T=nTargets();if(!T){openNProfile();toast("D'abord, calcule tes besoins 🎯");return}const W=WK(),g=T.g,tg=wTargets(),used={};
+  W.days=WD.map((_,d)=>{const day=Object.keys(NM).map(m=>{const r=wPick(g,m,used);used[r.id]=(used[r.id]||0)+1;return {m,id:r.id,x:1}});wScale(day,tg[d]);return day});
+  W.shop={};W.made=Date.now();save();render();toast("📅 Ta semaine est prête !")}
+function wSwap(d,i){const W=WK(),T=nTargets(),it=W.days[d][i],used={};W.days.flat().forEach(x=>used[x.id]=(used[x.id]||0)+1);
+  const r=wPick(T?T.g:RECI[it.id].g,it.m,used,it.id);it.id=r.id;wScale(W.days[d],wTargets()[d]);W.shop={};save();render()}
+function wUseDay(d){const W=WK(),N=NU();N.day.meals={pdj:[],dej:[],din:[],col:[]};W.days[d].forEach(x=>N.day.meals[x.m].push([x.id,x.x]));save();nView="jour";render();window.scrollTo(0,0);toast("✅ "+WDL[d]+" chargé dans Ma journée")}
+function wTrain(d){const W=WK();W.train[d]=W.train[d]?0:1;if(W.days){const tg=wTargets();W.days.forEach((day,i)=>wScale(day,tg[i]));W.shop={}}save();render()}
+function vSeg(){return `<div class="seg">${[["jour","Aujourd'hui"],["semaine","Ma semaine"],["courses","Courses"]].map(([v,l])=>`<button class="${nView===v?'on':''}" onclick="nView='${v}';render();window.scrollTo(0,0)">${l}</button>`).join("")}</div>`}
+function vNutri2(){return vSeg()+(nView==="semaine"?vWeek():nView==="courses"?vShop():vNutri())}
+function vWeek(){const W=WK(),T=nTargets(),tg=wTargets();
+  const opts=`<div class="card"><div class="row between"><h3 style="font-size:20px">📅 Ma semaine</h3>${T?`<span class="mut">${NG_ICO[T.g]} ${NG[T.g]}</span>`:""}</div>
+   <div class="mut" style="margin:6px 0">Tes jours d'entraînement (un peu plus à manger ces jours-là) :</div>
+   <div class="row" style="gap:5px;flex-wrap:wrap">${WD.map((d,i)=>`<button class="pill ${W.train[i]?'on':''}" onclick="wTrain(${i})">${W.train[i]?"🏋️ ":""}${d}</button>`).join("")}</div>
+   <div class="row" style="gap:6px;margin-top:8px"><button class="pill ${W.veg?'on':''}" onclick="WK().veg=WK().veg?0:1;save();render()">🌱 Végé</button><button class="pill ${W.fast?'on':''}" onclick="WK().fast=WK().fast?0:1;save();render()">⚡ Rapide (≤15 min)</button></div>
+   <div style="height:10px"></div><button class="btn" onclick="wGen()">${W.days?"🔄 Générer une nouvelle semaine":"✨ Générer ma semaine"}</button></div>`;
+  if(!W.days)return opts+`<div class="card empty">${T?"Appuie sur « Générer ma semaine » : l'appli choisit 28 repas adaptés à ton objectif, avec la liste de courses.":"Calcule d'abord tes besoins dans « Aujourd'hui »."}</div>`;
+  const day=W.days[wDay],tot=day.reduce((a,x)=>{const r=RECI[x.id];return {k:a.k+r.k*x.x,p:a.p+r.p*x.x}},{k:0,p:0});
+  return opts+`<div class="tabs">${WD.map((d,i)=>`<button class="${wDay===i?'on':''}" onclick="wDay=${i};render()">${d}${W.train[i]?" 🏋️":""}</button>`).join("")}</div>
+  <div class="card"><div class="row between"><h3 style="font-size:20px">${WDL[wDay]}</h3><span class="mut">${W.train[wDay]?"🏋️ Entraînement":"😴 Repos"}</span></div>
+   <div class="mut" style="margin-top:2px">${Math.round(tot.k)} kcal${tg[wDay]?" / "+tg[wDay]:""} · ${Math.round(tot.p)} g de protéines</div>
+   ${day.map((x,i)=>{const r=RECI[x.id];return `<div class="wrow"><div class="wimg g-${r.g}${rPh(r.id,200)}">${RIMG[r.id]?"":r.e}</div><div class="grow" onclick="nPort=${x.x};recModal(RECI['${r.id}'])"><div class="mut">${NM_ICO[x.m]} ${NM[x.m]}</div><b>${r.n}</b><div class="mut">${Math.round(r.k*x.x)} kcal${x.x!==1?" · portion ×"+x.x:""}</div></div><button class="xbtn" style="font-size:18px" aria-label="Changer" onclick="wSwap(${wDay},${i})">🔄</button></div>`}).join("")}
+   <div style="height:10px"></div><button class="btn sec" onclick="wUseDay(${wDay})">✅ Suivre ce jour dans « Aujourd'hui »</button></div>
+  <button class="btn" onclick="nView='courses';render();window.scrollTo(0,0)">🛒 Voir la liste de courses</button>`}
+function wShopList(){const W=WK(),q={};if(!W.days)return null;W.days.flat().forEach(x=>RECI[x.id].ing.forEach(([i,g])=>{q[i]=(q[i]||0)+g*x.x}));return q}
+function shopFmt(i,g){if(!g)return ING[i][0];if(i==="oeuf")return Math.ceil(g/55)+" œufs";if(i==="tortilla")return Math.ceil(g/60)+" tortillas";if(i==="galette")return Math.ceil(g/8)+" galettes de riz";
+  if(["lait","coco","creme"].includes(i))return (g>=1000?(Math.ceil(g/100)/10).toLocaleString("fr-FR")+" L":Math.ceil(g/50)*50+" ml")+" de "+ING[i][0];
+  const r=g>=1000?(Math.ceil(g/100)/10).toLocaleString("fr-FR")+" kg":(g<50?Math.ceil(g/5)*5:Math.ceil(g/50)*50)+" g";return r+" de "+ING[i][0]}
+function vShop(){const q=wShopList(),W=WK();if(!q)return `<div class="card empty">Génère d'abord ta semaine dans « Ma semaine » 📅<div style="height:10px"></div><button class="btn" onclick="nView='semaine';render()">Aller à ma semaine</button></div>`;
+  const keys=Object.keys(q).filter(i=>q[i]>0),done=keys.filter(i=>W.shop[i]).length;
+  const extra=Object.keys(q).filter(i=>!q[i]).map(i=>ING[i][0]);
+  return `<div class="card"><div class="row between"><h3 style="font-size:20px">🛒 Mes courses</h3><span class="mut">${done}/${keys.length}</span></div>${nBar(done,keys.length,"var(--acc)")}
+   <p class="mut" style="margin:8px 0 0">Pour les 28 repas de ta semaine, portions comprises. Coche au fur et à mesure.</p></div>
+  ${Object.entries(ICAT).map(([c,list])=>{const its=list.filter(i=>q[i]>0);if(!its.length)return "";return `<div class="card"><h3 style="font-size:18px;margin-bottom:4px">${c}</h3>${its.map(i=>`<label class="shop ${W.shop[i]?'done':''}"><input type="checkbox" ${W.shop[i]?"checked":""} onchange="WK().shop['${i}']=this.checked?1:0;save();render()"><span>${shopFmt(i,q[i])}</span></label>`).join("")}</div>`}).join("")}
+  ${extra.length?`<div class="card"><h3 style="font-size:18px">🧂 À avoir dans tes placards</h3><div class="mut" style="margin-top:4px">${[...new Set(extra)].join(", ")}, sel, poivre</div></div>`:""}
+  <div class="grid2"><button class="btn sec" onclick="shopShare()">📤 Partager la liste</button><button class="btn sec" onclick="WK().shop={};save();render()">↺ Tout décocher</button></div>`}
+function shopShare(){const q=wShopList();if(!q)return;const txt="🛒 Courses MuscuQuest\n\n"+Object.entries(ICAT).map(([c,l])=>{const its=l.filter(i=>q[i]>0&&!WK().shop[i]);return its.length?c+"\n"+its.map(i=>"• "+shopFmt(i,q[i])).join("\n"):""}).filter(Boolean).join("\n\n");
+  if(navigator.share){navigator.share({text:txt}).catch(()=>{})}else if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>toast("📋 Liste copiée"),()=>toast("Copie impossible"))}}
+
 function NU(){if(!S.nutri)S.nutri={prof:null,fav:[],day:{date:"",meals:{pdj:[],dej:[],din:[],col:[]}}};const d=new Date().toDateString();
   if(S.nutri.day.date!==d)S.nutri.day={date:d,meals:{pdj:[],dej:[],din:[],col:[]}};return S.nutri}
 function nTargets(){const P=NU().prof;if(!P)return null;const {sex,age,h,w,act,goal}=P;
