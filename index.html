@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>MuscuQuest</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f1115">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -112,7 +115,7 @@ nav button.on{color:var(--acc)}nav button svg{width:22px;height:22px}
 .coach{background:var(--card2);border:0;border-left:3px solid var(--acc);color:var(--txt)}
 .toast{border-color:var(--line)}
 .levelup{color:var(--acc)}
-</style>
+[hidden]{display:none!important}</style>
 </head>
 <body>
 <div id="app"></div>
@@ -281,6 +284,7 @@ const FRIENDS=[{n:"Lucas",x:820},{n:"Inès",x:640},{n:"Yanis",x:410},{n:"Sarah",
 
 /* ================== ÉTAT / STOCKAGE ================== */
 const KEY="muscuquest_v1";
+const FREE=!(window.claude&&window.claude.use);
 let S;
 function blank(){return {name:"Toi",xp:0,prCount:0,rest:90,sessions:[],programs:JSON.parse(JSON.stringify(DEFAULT_PROGRAMS)),active:null,badges:[],challenges:{active:[],done:[]},cls:"",clsAt:0,outfit:{},body:[],photos:[],seenN:[],bossWon:{},look:{},premium:null,owned:[],plan:null,adDay:"",onboarded:false,savedAt:0}}
 function load(){try{const r=localStorage.getItem(KEY);S=r?Object.assign(blank(),JSON.parse(r)):blank()}catch(e){S=blank()}if(!S.challenges||!Array.isArray(S.challenges.active))S.challenges={active:[],done:[]}}
@@ -326,7 +330,7 @@ let tab="home";
 function go(t){tab=t;render();window.scrollTo(0,0)}
 function renderNav(){document.getElementById("nav").innerHTML=TABS.map(([id,e,l])=>`<button class="${tab===id?'on':''}" onclick="go('${id}')"><b>${e}</b>${l}</button>`).join("")}
 function render(){renderNav();const a=document.getElementById("app");
-  a.innerHTML=`<header class="top"><h1>Muscu<span>Quest</span></h1><div class="row" style="gap:6px"><button class="pill" style="position:relative;font-size:15px;padding:5px 10px" onclick="openNotifs()">🔔${(()=>{const n=unread();return n?`<span class="nb">${n}</span>`:""})()}</button><button class="pill" style="font-size:15px;padding:5px 10px;${S.premium?'border-color:var(--gold)':''}" onclick="openPremium()">👑</button><button class="pill" onclick="openSettings()">⚙️</button></div></header>`+({home:vHome,work:vWork,lib:vLib,prog:vProg,fr:vFr}[tab])();
+  a.innerHTML=`<header class="top"><h1>Muscu<span>Quest</span></h1><div class="row" style="gap:6px"><button class="pill" style="position:relative;font-size:15px;padding:5px 10px" onclick="openNotifs()">🔔${(()=>{const n=unread();return n?`<span class="nb">${n}</span>`:""})()}</button><button class="pill" style="font-size:15px;padding:5px 10px;${S.premium?'border-color:var(--gold)':''}" onclick="openPremium()" ${FREE?"hidden":""}>👑</button><button class="pill" onclick="openSettings()">⚙️</button></div></header>`+({home:vHome,work:vWork,lib:vLib,prog:vProg,fr:vFr}[tab])();
   if(tab==="prog"&&progTab==="perf")drawChart();if(tab==="prog"&&progTab==="body")drawLine("bodyChart",S.body.filter(x=>x.w).map(x=>x.w));
 }
 
@@ -1571,8 +1575,8 @@ function startPlanDay(){const n=planNext();if(!n)return;S.active={pid:"plan_"+n.
 const SHOP=[{s:"top",id:"neon",n:"T-shirt néon",price:1.99},{s:"fx",id:"fire",n:"Aura de feu",price:2.99},{s:"back",id:"capeb",n:"Cape de l'ombre",price:1.99},
  {s:"head",id:"viking",n:"Casque viking",price:.99},{s:"hands",id:"goldg",n:"Gants dorés",price:.99},{s:"waist",id:"champ",n:"Ceinture de champion",prem:true}];
 SHOP.forEach(x=>OUTFIT.push({s:x.s,id:x.id,n:x.n,lv:1,shop:true}));
-const ownsItem=id=>{const it=SHOP.find(x=>x.id===id);if(!it)return true;return it.prem?!!S.premium:S.owned.includes("item_"+id)};
-function openPremium(){const P=!!S.premium;
+const ownsItem=id=>{if(FREE)return true;const it=SHOP.find(x=>x.id===id);if(!it)return true;return it.prem?!!S.premium:S.owned.includes("item_"+id)};
+function openPremium(){if(FREE){toast("Tout est gratuit dans cette version 🎉");return}const P=!!S.premium;
   modal(`<div style="text-align:center"><div style="font-size:48px">👑</div><h2>MuscuQuest Premium</h2><div class="mut">${P?"Premium est activé (aperçu de test)":"Va plus loin dans ta progression"}</div></div>
    <div class="card" style="margin-top:12px">${[["🤖","Coach IA","analyse tes séances et te conseille"],["📚","Tous les programmes","prise de muscle, force, sèche, abdos"],["📊","Stats avancées","volume par muscle et carte des muscles de la semaine"],["📸","Photos illimitées","au lieu de 3 en gratuit"],["🥋","Ceinture de champion","tenue exclusive Premium"],["🚫","Sans pub",""]].map(([e,t,d])=>`<div class="row" style="margin:7px 0"><span style="font-size:20px;width:28px">${e}</span><div><b>${t}</b>${d?` <span class="mut">· ${d}</span>`:""}</div></div>`).join("")}</div>
    ${P?`<button class="btn sec" onclick="S.premium=null;save();closeModal();render();toast('Premium désactivé')">Désactiver l'aperçu Premium</button>`:`
@@ -1590,7 +1594,7 @@ function openShop(){const L=levelInfo(S.xp).lvl;
      return `<div class="card" style="display:flex;gap:12px;align-items:center"><div style="flex:none">${avatarSVG(L,prev,S.cls,58)}</div><div style="flex:1"><b>${it.n}</b><div class="mut">${SLOTN[it.s]}</div></div>
       ${own?`<button class="btn sm" onclick="equip('${it.s}','${it.id}');openShop()">${(S.outfit[it.s]||"")===it.id?"✓ Portée":"Porter"}</button>`:it.prem?`<button class="btn sm" style="background:var(--gold)" onclick="openPremium()">👑 Premium</button>`:`<button class="btn sm" style="background:var(--gold)" onclick="buySim('item_${it.id}','${it.n.replace(/'/g,"\\'")}',${it.price},'openShop()')">${fmtE(it.price)}</button>`}</div>`}).join("")}
    <p class="mut" style="font-size:12px">🧪 Achats simulés dans ce prototype : rien n'est facturé.</p><button class="btn sec" onclick="closeModal()">Fermer</button>`)}
-function adCard(){if(S.premium)return "";const today=new Date().toDateString();const can=S.adDay!==today;
+function adCard(){if(S.premium||FREE)return "";const today=new Date().toDateString();const can=S.adDay!==today;
   return `<div class="card" style="border-style:dashed"><div class="mut" style="font-size:11px;text-transform:uppercase;letter-spacing:1px">Publicité · exemple</div>
    <div class="row" style="margin-top:6px"><span style="font-size:26px">📣</span><div style="flex:1" class="mut">Ici s'afficherait une bannière de pub dans la version gratuite.</div></div>
    <div class="row" style="margin-top:10px;gap:6px"><button class="btn sm" ${can?"":"disabled style='opacity:.4'"} onclick="watchAd()">🎬 Regarder une pub : +25 XP${can?"":" (demain)"}</button><button class="btn sec sm" onclick="openPremium()">👑 Retirer les pubs</button></div></div>`}
@@ -1609,7 +1613,7 @@ function advStatsCard(){if(!S.premium)return `<div class="card" style="cursor:po
 
 /* ================== COACH IA ================== */
 let coachTxt="",coachBusy=false;
-function coachCard(){return `<div class="card" style="border-color:var(--acc2)"><div class="row between"><h3 style="font-size:20px">Coach IA</h3>${S.premium?"":`<span class="pill" style="color:var(--gold)">👑</span>`}</div>
+function coachCard(){if(FREE)return "";return `<div class="card" style="border-color:var(--acc2)"><div class="row between"><h3 style="font-size:20px">Coach IA</h3>${S.premium?"":`<span class="pill" style="color:var(--gold)">👑</span>`}</div>
   <p class="mut" style="margin:4px 0 8px">Analyse tes dernières séances et te dit quoi améliorer.</p>
   <div id="coachOut" style="white-space:pre-wrap;font-size:14px;line-height:1.5">${esc(coachTxt)}</div>
   <button class="btn" style="margin-top:10px" ${coachBusy?"disabled":""} onclick="askCoach()">${coachBusy?"Analyse en cours…":coachTxt?"🔁 Nouvelle analyse":"Analyser mes séances"}</button></div>`}
@@ -1706,7 +1710,7 @@ const TABS2=[["home","Accueil"],["work","Séance"],["lib","Exercices"],["prog","
 function renderNav(){document.getElementById("nav").innerHTML=TABS2.map(([id,l])=>`<button class="${tab===id?'on':''}" onclick="go('${id}')">${svgI(id)}${l}</button>`).join("")}
 function headerHTML(){const n=unread();return `<header class="top"><h1>Muscu<span>Quest</span></h1><div class="row" style="gap:6px">
   <button class="iconbtn" aria-label="Notifications" onclick="openNotifs()">${svgI("bell")}${n?`<span class="nb">${n}</span>`:""}</button>
-  <button class="iconbtn" aria-label="Premium" style="${S.premium?'color:var(--gold)':''}" onclick="openPremium()">${svgI("crown")}</button>
+  <button class="iconbtn" aria-label="Premium" ${FREE?'hidden':''} style="${S.premium?'color:var(--gold)':''}" onclick="openPremium()">${svgI("crown")}</button>
   <button class="iconbtn" aria-label="Réglages" onclick="openSettings()">${svgI("gear")}</button></div></header>`}
 function render(){renderNav();const a=document.getElementById("app");
   a.innerHTML=headerHTML()+({home:vHome,work:vWork,lib:vLib,prog:vProg,fr:vFr}[tab])();
@@ -1745,12 +1749,14 @@ function openHero(){const L=levelInfo(S.xp),st=stats(),CL=CLASSES[S.cls];
    <div class="sec-t">Badges · ${S.badges.length}/${BADGES.length}</div>
    <div class="grid2" style="grid-template-columns:repeat(3,1fr)">${BADGES.map(b=>`<div class="badge ${S.badges.includes(b.id)?'':'off'}"><span class="e">${b.e}</span>${b.n}</div>`).join("")}</div>
    <div style="height:12px"></div><div class="row"><button class="btn sec" onclick="wardrobe()">Apparence</button><button class="btn sec" onclick="chooseClass()">Classe</button></div><div style="height:8px"></div><button class="btn" onclick="closeModal()">Fermer</button>`)}
-function adCard(){if(S.premium)return "";const today=new Date().toDateString();const can=S.adDay!==today;
+function adCard(){if(S.premium||FREE)return "";const today=new Date().toDateString();const can=S.adDay!==today;
   return `<div class="card" style="border-style:dashed;margin-top:16px"><div class="mut" style="font-size:11px;text-transform:uppercase;letter-spacing:1px">Publicité (exemple)</div>
    <div class="row" style="margin-top:8px;gap:6px;flex-wrap:wrap"><button class="btn sec sm" ${can?"":"disabled style='opacity:.4'"} onclick="watchAd()">Regarder une pub : +25 XP</button><button class="btn sec sm" onclick="openPremium()">Retirer les pubs</button></div></div>`}
 
+if(FREE&&!S.premium){S.premium={since:Date.now(),free:1};save()}
 refreshPlanSession();
 render();initFriends();if(!S.onboarded){if(S.sessions.length){S.onboarded=true;save()}else onboarding()}
 </script>
+<script>if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{})}</script>
 </body>
 </html>
