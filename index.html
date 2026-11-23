@@ -117,12 +117,12 @@ nav button.on{color:var(--acc)}nav button svg{width:22px;height:22px}
 .levelup{color:var(--acc)}
 [hidden]{display:none!important}.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .rcard{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer}
-.rimg{height:92px;display:flex;align-items:center;justify-content:center;position:relative;font-size:44px}
+.rimg{height:110px;display:flex;align-items:center;justify-content:center;position:relative;font-size:44px}
 .rimg b{position:absolute;bottom:6px;right:8px;font-size:11px;background:rgba(0,0,0,.45);color:#fff;padding:2px 7px;border-radius:99px;font-weight:600}
 .rimg i{position:absolute;top:6px;right:9px;font-style:normal;color:#ff5d7a;font-size:16px}
 .rbody{padding:8px 10px 10px}.rname{font-weight:600;font-size:14px;line-height:1.25;margin-bottom:3px}
 .g-perte{background:linear-gradient(135deg,#3a1f14,#7a3516)}.g-forme{background:linear-gradient(135deg,#14302a,#1f5a48)}.g-masse{background:linear-gradient(135deg,#1b2440,#2f3f78)}
-.rhero{height:150px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:72px}
+.ph{background-size:cover;background-position:center}.rhero{height:190px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:72px}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;margin-top:10px}
 .grid4 .stat{background:var(--card2);border-radius:10px;padding:8px 2px;margin:0}
 .meals{margin-top:12px}.meal{border-top:1px solid var(--line);padding:9px 0}.mitem{padding:5px 0 0;font-size:14px;cursor:pointer}
@@ -1867,6 +1867,8 @@ const RAW_REC=[
 const REC=RAW_REC.map(([id,n,e,g,m,t,tags,ing,st])=>{let k=0,p=0,c=0,f=0;ing.forEach(([i,q])=>{const d=ING[i];k+=d[1]*q/100;p+=d[2]*q/100;c+=d[3]*q/100;f+=d[4]*q/100});
   return {id,n,e,g,m,t,tags,ing,st,k:Math.round(k/5)*5,p:Math.round(p),c:Math.round(c),f:Math.round(f)}});
 const RECI=Object.fromEntries(REC.map(r=>[r.id,r]));
+const RIMG={"p1":"1692071106919-01bc0b9b0919","p2":"1677844592730-ce9c936d8f1a","p3":"1559329607-43c470fd9aac","p4":"1525351484163-7529414344d8","p5":"1593450298197-e6031f033a44","p6":"1604497198754-a2183225cdc4","p7":"1685079253777-61c2c0de2956","p8":"1762631882592-25bc08678af6","p9":"1790701909034-6c7b45c7b58a","p10":"1778168199427-4e839943d20f","p11":"1788604619692-120407b7207c","p12":"1788490099234-0e8c6b5255d0","p13":"1665593998976-d957f2827fe7","p14":"1649434150059-13fee33e1de4","p15":"1606070781631-a7e961f84c9e","p16":"1766146431872-a4472ccd3889","p17":"1546069901-ba9599a7e63c","p18":"1572269852948-434ae794bb1b","p19":"1640458348210-6c46cc136f18","p20":"1570639518322-96c1d2f28f86","f1":"1763686483398-730a9555b3f5","f2":"1528207776546-365bb710ee93","f3":"1465014925804-7b9ede58d0d7","f4":"1552842016-443bcee0667b","f5":"1685967836529-b0e8d6938227","f6":"1772693471187-6e7d364f99ee","f7":"1761545832779-bc0b4290fc5e","f8":"1623428187969-5da2dcea5ebf","f9":"1676300185165-3f543c1fcb72","f10":"1771074168439-0083aaac48e7","f11":"1670816978291-a5cf23d87968","f12":"1708782344490-9026aaa5eec7","f13":"1768204039572-9e62db7b39fd","f14":"1723511413901-99439b957bbf","f15":"1767065584177-9ceb902eec7a","f16":"1585032226651-759b368d7246","f17":"1599974579688-8dbdd335c77f","f18":"1649431473478-2768c3f21c6d","f19":"1753364547864-679728b22c31","f20":"1633893215265-4763142f9b57","f21":"1634234498278-b01fbf12bf4c","m1":"1598259298632-e785684cfa90","m2":"1563690449029-d6e1b8d6003d","m3":"1707219811295-0f283760668b","m4":"1612182062633-9ff3b3598e96","m5":"1727245243403-b177f3670c2e","m6":"1666819691716-827f78d892f3","m7":"1621996346565-e3dbc646d9a9","m8":"1561758033-d89a9ad46330","m9":"1638502182261-7be714a565ce","m10":"1729450412050-6c00ec592e34","m11":"1626700051175-6818013e1d4f","m12":"1684950888991-224571bf3910","m13":"1766706519060-d44bd9dc50f7","m14":"1603133872878-684f208fb84b","m15":"1596560314766-08c0c6890024","m16":"1611599537845-1c7aca0091c0","m17":"1791202978575-21e01ab3a6e5","m18":"1572490122747-3968b75cc699","m19":"1610858631025-0f2d6b6e773b","m20":"1767877609689-beff32b9c0ac","m21":"1610441009633-b6ca9c6d4be2","m22":"1672078857105-a1229a7033b8"};
+const rPh=(id,w)=>RIMG[id]?` ph" style="background-image:url(https://images.unsplash.com/photo-${RIMG[id]}?w=${w}&q=70&auto=format&fit=crop)`:"";
 let nG=null,nM="all",nQ="",nTag="",nPort=1;
 function NU(){if(!S.nutri)S.nutri={prof:null,fav:[],day:{date:"",meals:{pdj:[],dej:[],din:[],col:[]}}};const d=new Date().toDateString();
   if(S.nutri.day.date!==d)S.nutri.day={date:d,meals:{pdj:[],dej:[],din:[],col:[]}};return S.nutri}
@@ -1879,7 +1881,7 @@ function nTargets(){const P=NU().prof;if(!P)return null;const {sex,age,h,w,act,g
   return {kcal:Math.round(kcal/10)*10,prot,fat,carb,g,note,teen:age<18}}
 function nDayTot(){const M=NU().day.meals;let k=0,p=0,c=0,f=0;Object.values(M).forEach(a=>a.forEach(([id,x])=>{const r=RECI[id];if(!r)return;k+=r.k*x;p+=r.p*x;c+=r.c*x;f+=r.f*x}));return {k:Math.round(k),p:Math.round(p),c:Math.round(c),f:Math.round(f)}}
 function nBar(v,max,col){const pc=max?Math.min(100,Math.round(v/max*100)):0;return `<div style="height:7px;background:var(--card2);border-radius:9px;overflow:hidden;margin-top:4px"><div style="width:${pc}%;height:100%;background:${col};border-radius:9px"></div></div>`}
-function nCard(r){const fav=NU().fav.includes(r.id);return `<div class="rcard" onclick="openRec('${r.id}')"><div class="rimg g-${r.g}"><span>${r.e}</span>${fav?'<i>♥</i>':''}<b>${r.t} min</b></div>
+function nCard(r){const fav=NU().fav.includes(r.id);return `<div class="rcard" onclick="openRec('${r.id}')"><div class="rimg g-${r.g}${rPh(r.id,400)}">${RIMG[r.id]?"":`<span>${r.e}</span>`}${fav?'<i>♥</i>':''}<b>${r.t} min</b></div>
   <div class="rbody"><div class="rname">${r.n}</div><div class="mut">${r.k} kcal · ${r.p} g prot.</div></div></div>`}
 function vNutri(){const N=NU(),T=nTargets(),D=nDayTot();
   const goal=nG===null?(T?T.g:"all"):nG;const q=nQ.trim().toLowerCase();
@@ -1896,11 +1898,11 @@ function vNutri(){const N=NU(),T=nTargets(),D=nDayTot();
   <div class="row" style="gap:8px;margin-bottom:10px"><input id="nSearch" placeholder="🔍 Recette ou ingrédient…" value="${esc(nQ)}" oninput="nQ=this.value;renderNutriList()" style="flex:1">
    <button class="pill ${nTag==='rapide'?'on':''}" onclick="nTag=nTag==='rapide'?'':'rapide';render()">⚡ Rapide</button><button class="pill ${nTag==='vege'?'on':''}" onclick="nTag=nTag==='vege'?'':'vege';render()">🌱 Végé</button></div>
   <div class="mut" id="nCount" style="margin:0 0 8px 2px">${list.length} recette${list.length>1?"s":""}</div><div class="rgrid" id="nList">${list.map(nCard).join("")||`<div class="card empty" style="grid-column:1/-1">Aucune recette trouvée</div>`}</div>
-  <p class="mut" style="margin-top:14px;font-size:11px">Valeurs nutritionnelles calculées à partir de valeurs moyennes des ingrédients (type tables CIQUAL), à titre indicatif. Besoins : équation de Mifflin-St Jeor (1990) ; protéines selon l'ISSN (2017) et Morton et al. (2018). Ce n'est pas un avis médical : en cas de problème de santé, de grossesse ou de moins de 18 ans, demande l'avis d'un médecin ou d'un diététicien.</p>`}
+  <p class="mut" style="margin-top:14px;font-size:11px">Photos d'illustration : Unsplash (licence libre). Valeurs nutritionnelles calculées à partir de valeurs moyennes des ingrédients (type tables CIQUAL), à titre indicatif. Besoins : équation de Mifflin-St Jeor (1990) ; protéines selon l'ISSN (2017) et Morton et al. (2018). Ce n'est pas un avis médical : en cas de problème de santé, de grossesse ou de moins de 18 ans, demande l'avis d'un médecin ou d'un diététicien.</p>`}
 function renderNutriList(){const el=document.getElementById("nList");if(!el)return;const y=window.scrollY;render();window.scrollTo(0,y);const s=document.getElementById("nSearch");if(s){s.focus();s.setSelectionRange(s.value.length,s.value.length)}}
 function openRec(id){const r=RECI[id];if(!r)return;nPort=1;recModal(r)}
 function recModal(r){const fav=NU().fav.includes(r.id),x=nPort;
-  modal(`<div class="rhero g-${r.g}"><span>${r.e}</span></div><h2 style="margin-top:10px">${r.n}</h2>
+  modal(`<div class="rhero g-${r.g}${rPh(r.id,900)}">${RIMG[r.id]?"":`<span>${r.e}</span>`}</div><h2 style="margin-top:10px">${r.n}</h2>
   <div class="mut">${NG_ICO[r.g]} ${NG[r.g]} · ${NM_ICO[r.m]} ${NM[r.m]} · ⏱ ${r.t} min${r.tags.includes("vege")?" · 🌱 Végé":""}</div>
   <div class="grid4">${[["kcal",Math.round(r.k*x)],["Prot.",Math.round(r.p*x)+" g"],["Gluc.",Math.round(r.c*x)+" g"],["Lip.",Math.round(r.f*x)+" g"]].map(([l,v])=>`<div class="stat"><b>${v}</b><div class="mut">${l}</div></div>`).join("")}</div>
   <div class="row between" style="margin:6px 0 10px"><span class="mut">Portion</span><div class="row" style="gap:4px">${[0.75,1,1.25,1.5].map(p=>`<button class="pill ${p===x?'on':''}" onclick="nPort=${p};recModal(RECI['${r.id}'])">×${p}</button>`).join("")}</div></div>
