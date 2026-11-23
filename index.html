@@ -1129,10 +1129,9 @@ function vFr(){const ws=weekStart();const myWeek=S.sessions.filter(x=>new Date(x
   const board=[...FRIENDS.map(f=>({...f,me:false})),{n:(S.name==="Toi"?"Toi":S.name+" (toi)"),x:myWeek,me:true}].sort((a,b)=>b.x-a.x);
   const act=S.challenges.active,full=act.length>=MAXCH;
   const list=CHAL.filter(c=>chFilter==="tous"||c.lv===chFilter);
-  return `<div class="card"><div class="row between"><h3 style="font-size:20px">Mes défis en cours</h3><span class="mut">${act.length}/${MAXCH}</span></div>
+  return `${friendsSection()}<div class="card"><div class="row between"><h3 style="font-size:20px">Mes défis en cours</h3><span class="mut">${act.length}/${MAXCH}</span></div>
      ${act.length?"":`<p class="mut" style="margin:8px 0 0">Aucun défi en cours. Choisis-en un dans la liste ci-dessous 👇</p>`}</div>
    ${act.map(chCard).join("")}
-   ${friendsSection()}
    <div class="card"><h3 style="font-size:20px">Choisis ton défi</h3><p class="mut" style="margin:4px 0 10px">Ta progression se compte toute seule. ${MAXCH} défis en même temps maximum.</p>
     <div class="tabs">${[["tous","Tous"],...Object.entries(DIFF).map(([k,v])=>[k,v[0]])].map(([k,l])=>`<button class="${chFilter===k?'on':''}" onclick="chFilter='${k}';render()">${l}</button>`).join("")}</div>
     ${list.map(C=>{const on=act.some(a=>a.id===C.id);const n=S.challenges.done.filter(d=>d.id===C.id).length;
@@ -1725,7 +1724,7 @@ const ICO={home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-
  nutri:'<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.5 1-4 4-4 8h4"/>',
  chev:'<path d="M9 6l6 6-6 6"/>'};
 const svgI=(k,sz)=>`<svg viewBox="0 0 24 24" ${sz?`width="${sz}" height="${sz}"`:""} fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
-const TABS2=[["home","Accueil"],["work","Séance"],["lib","Exercices"],["nutri","Repas"],["prog","Progrès"],["fr","Défis"]];
+const TABS2=[["home","Accueil"],["work","Séance"],["lib","Exercices"],["nutri","Repas"],["prog","Progrès"],["fr","Amis"]];
 function renderNav(){document.getElementById("nav").innerHTML=TABS2.map(([id,l])=>`<button class="${tab===id?'on':''}" onclick="go('${id}')">${svgI(id)}${l}</button>`).join("")}
 function headerHTML(){const n=unread();return `<header class="top"><h1>Muscu<span>Quest</span></h1><div class="row" style="gap:6px">
   <button class="iconbtn" aria-label="Notifications" onclick="openNotifs()">${svgI("bell")}${n?`<span class="nb">${n}</span>`:""}</button>
@@ -2058,7 +2057,7 @@ function palListen(){PAL.unsub.forEach(u=>u());PAL.unsub=[];const db=PAL.db,me=P
   PAL.unsub.push(db.collection("users/"+me+"/friends").onSnapshot(s=>{PAL.frIds=s.docs.map(d=>d.id);
     PAL.frIds.forEach(id=>{if(!PAL.fr[id]){PAL.fr[id]={p:"…",lvl:1,wx:0,wk:0};PAL.unsub.push(db.doc("users/"+id).onSnapshot(u=>{PAL.fr[id]=u.exists?u.data():{p:"(compte supprimé)",lvl:1,wx:0,wk:0,gone:1};if(tab==="fr")render()},()=>{}))}});
     if(tab==="fr")render()},()=>{}));
-  PAL.unsub.push(db.collection("requests").where("to","==",me).onSnapshot(s=>{PAL.reqIn=s.docs.map(d=>d.data());
+  PAL.unsub.push(db.collection("requests").where("to","==",me).onSnapshot(s=>{PAL.reqIn=s.docs.map(d=>d.data()).filter(r=>!PAL.frIds.includes(r.from));
     const ids=PAL.reqIn.map(r=>r.from).join();if(PAL.seenReq!==null&&PAL.reqIn.length&&ids!==PAL.seenReq)toast("👋 "+PAL.reqIn[0].fp+" veut être ton ami !");PAL.seenReq=ids;render()},()=>{}));
   PAL.unsub.push(db.collection("requests").where("from","==",me).onSnapshot(s=>{PAL.reqOut=s.docs.map(d=>d.data());if(tab==="fr")render()},()=>{}))}
 const palOk=p=>/^[A-Za-z0-9_.]{3,16}$/.test(p);
