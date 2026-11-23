@@ -131,6 +131,7 @@ nav button.on{color:var(--acc)}nav button svg{width:22px;height:22px}
 .seg{display:flex;background:var(--card2);border-radius:12px;padding:3px;margin-bottom:12px}.seg button{flex:1;padding:9px 4px;border-radius:9px;font-size:13px;color:var(--mut);font-weight:600}.seg button.on{background:var(--acc);color:#140a02}
 .wrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}.wrow .grow{flex:1;min-width:0}.wimg{width:58px;height:58px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;font-size:28px}
 .shop{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.shop input{width:20px;height:20px;accent-color:var(--acc);flex:none}.shop.done span{text-decoration:line-through;color:var(--mut)}
+.hello{cursor:pointer}.seg button{line-height:1.3}
 .pill.on{background:var(--acc);color:#140a02;border-color:var(--acc);font-weight:600}.exitem.sel{background:var(--card2);border-radius:10px;padding-left:8px}
 </style>
 </head>
@@ -1984,6 +1985,59 @@ function nSet(k,v){const P=window._np;P.age=document.getElementById("npAge").val
 function nSaveProf(){const P=window._np,age=+document.getElementById("npAge").value,h=+document.getElementById("npH").value,w=+String(document.getElementById("npW").value).replace(",",".");
   if(!(age>=13&&age<=100)){toast("Âge entre 13 et 100 ans");return}if(!(h>=120&&h<=230)){toast("Taille en cm (ex : 175)");return}if(!(w>=30&&w<=250)){toast("Poids en kg (ex : 70)");return}
   NU().prof={sex:P.sex,age,h,w,act:P.act,goal:P.goal};nG=null;save();closeModal();render();const T=nTargets();toast(T.teen?"✅ Profil enregistré":`🎯 ${T.kcal} kcal · ${T.prot} g de protéines par jour`)}
+
+/* ================== REPAS : VERSION SIMPLIFIÉE ================== */
+nView="recettes";
+function vSeg(){const tabs=[["recettes","🍽️","Recettes"],["semaine","📅","Ma semaine"],["courses","🛒","Courses"]];
+  const help={recettes:"Choisis une recette et ajoute-la à ta journée.",semaine:"L'appli prépare tes repas de la semaine pour toi.",courses:"Tout ce qu'il faut acheter pour ta semaine."};
+  return `<div class="seg">${tabs.map(([v,i,l])=>`<button class="${nView===v?'on':''}" onclick="nView='${v}';render();window.scrollTo(0,0)"><span style="font-size:17px">${i}</span><br>${l}</button>`).join("")}</div><p class="mut" style="margin:-4px 2px 12px">${help[nView]}</p>`}
+function vNutri2(){return vSeg()+(nView==="semaine"?vWeek():nView==="courses"?vShop():vRecettes())}
+function nGoalNow(){const T=nTargets();return nG===null?(T?T.g:"all"):nG}
+function vDaySummary(){const T=nTargets(),D=nDayTot(),N=NU(),n=Object.values(N.day.meals).reduce((a,m)=>a+m.length,0);
+  if(!T)return `<div class="card hello" onclick="openNProfile()"><div class="row between"><div><b>🎯 Combien dois-tu manger ?</b><div class="mut">Réponds à 6 questions, l'appli calcule pour toi.</div></div><span class="mut">›</span></div></div>`;
+  return `<div class="card hello" onclick="openDay()"><div class="row between"><b>Aujourd'hui</b><span class="mut">${n?n+" repas ›":"Voir ›"}</span></div>
+   ${T.teen?`<div class="mut" style="margin-top:4px">${n?"Tu as ajouté "+n+" repas.":"Ajoute tes repas de la journée."}</div>`:`<div style="margin-top:4px"><b class="big" style="font-size:24px">${D.k}</b> <span class="mut">/ ${T.kcal} kcal · ${D.p} / ${T.prot} g de protéines</span></div>${nBar(D.k,T.kcal,"var(--acc)")}`}</div>`}
+function openDay(){const T=nTargets(),D=nDayTot(),N=NU();
+  modal(`<h2>Ma journée</h2>${T&&!T.teen?`<div class="row between" style="margin-top:6px"><span><b class="big" style="font-size:28px">${D.k}</b> <span class="mut">/ ${T.kcal} kcal</span></span><span class="mut">${NG_ICO[T.g]} ${NG[T.g]}</span></div>${nBar(D.k,T.kcal,"var(--acc)")}
+   <div class="grid3" style="margin-top:10px">${[["Protéines",D.p,T.prot,"#4fc3f7"],["Glucides",D.c,T.carb,"#e9b949"],["Lipides",D.f,T.fat,"#ef6f8f"]].map(([l,v,m,c])=>`<div><div class="mut">${l}</div><b>${v}</b><span class="mut"> / ${m} g</span>${nBar(v,m,c)}</div>`).join("")}</div>`:""}
+   ${T&&T.note?`<p class="mut" style="margin:10px 0 0">ℹ️ ${T.note}</p>`:""}
+   <div class="meals">${Object.keys(NM).map(m=>{const a=N.day.meals[m];return `<div class="meal"><div class="row between"><b>${NM_ICO[m]} ${NM[m]}</b><button class="pill" onclick="closeModal();nView='recettes';nM='${m}';render();window.scrollTo(0,0)">+ Ajouter</button></div>
+    ${a.length?a.map(([id,x],i)=>{const r=RECI[id];return r?`<div class="row between mitem"><span>${r.e} ${r.n}${x!==1?` <span class="mut">×${x}</span>`:""}</span><span class="row" style="gap:6px"><span class="mut">${Math.round(r.k*x)} kcal</span><button class="xbtn" onclick="nDel('${m}',${i});openDay()">✕</button></span></div>`:""}).join(""):`<div class="mut">Rien pour l'instant</div>`}</div>`}).join("")}</div>
+   <div style="height:10px"></div><button class="btn sec" onclick="closeModal();openNProfile()">🎯 Modifier mon objectif</button><div style="height:8px"></div><button class="btn" onclick="closeModal()">Fermer</button>`)}
+function vRecettes(){const N=NU(),goal=nGoalNow(),q=nQ.trim().toLowerCase();
+  const list=REC.filter(r=>(goal==="all"||r.g===goal)&&(nM==="all"||nM==="fav"||r.m===nM)&&(nM!=="fav"||N.fav.includes(r.id))&&(!nTag||r.tags.includes(nTag))&&(!q||(r.n+" "+r.ing.map(i=>ING[i[0]][0]).join(" ")).toLowerCase().includes(q)));
+  return vDaySummary()+`<div class="row between" style="margin:4px 2px 8px"><span class="mut">Objectif</span><button class="pill on" onclick="openGoalPick()">${goal==="all"?"🍽️ Tous":NG_ICO[goal]+" "+NG[goal]} ▾</button></div>
+  <div class="tabs">${[["all","Tout"],...Object.keys(NM).map(m=>[m,NM_ICO[m]+" "+NM[m]]),["fav","♥ Favoris"]].map(([m,l])=>`<button class="${nM===m?'on':''}" onclick="nM='${m}';render()">${l}</button>`).join("")}</div>
+  <div class="row" style="gap:6px;margin-bottom:10px"><input id="nSearch" placeholder="🔍 Chercher (ex : poulet)" value="${esc(nQ)}" oninput="nQ=this.value;renderNutriList()" style="flex:1;min-width:0">
+   <button class="pill ${nTag==='rapide'?'on':''}" onclick="nTag=nTag==='rapide'?'':'rapide';render()">⚡</button><button class="pill ${nTag==='vege'?'on':''}" onclick="nTag=nTag==='vege'?'':'vege';render()">🌱</button></div>
+  <div class="rgrid" id="nList">${list.map(nCard).join("")||`<div class="card empty" style="grid-column:1/-1">Aucune recette trouvée</div>`}</div>
+  <p class="mut" style="margin:14px 2px 0;font-size:12px;text-align:center" onclick="openNInfo()">ℹ️ D'où viennent les chiffres ?</p>`}
+function openGoalPick(){const cur=nGoalNow();modal(`<h2>Quel objectif ?</h2><p class="mut">Les recettes s'adaptent à ce que tu veux.</p>
+  ${[["perte","Perdre du poids","Repas légers et riches en protéines"],["forme","Rester en forme","Repas équilibrés"],["masse","Prendre du muscle","Repas plus copieux"],["all","Tout voir","Les 66 recettes"]].map(([g,l,d])=>`<div class="exitem ${cur===g?'sel':''}" onclick="nG='${g}';closeModal();render()"><div style="font-size:26px">${g==="all"?"🍽️":NG_ICO[g]}</div><div class="grow"><b>${l}</b><div class="mut">${d}</div></div>${cur===g?"✅":""}</div>`).join("")}`)}
+function openNInfo(){modal(`<h2>D'où viennent les chiffres ?</h2><p>Les calories et macros sont calculées à partir du poids de chaque ingrédient (valeurs moyennes des tables CIQUAL). C'est indicatif.</p>
+  <p>Tes besoins : équation de Mifflin-St Jeor (1990). Protéines : recommandations de l'ISSN (2017) et de Morton et al. (2018).</p>
+  <p>Photos d'illustration : Unsplash (licence libre).</p><p class="mut">Ce n'est pas un avis médical. Si tu as un problème de santé, si tu es enceinte ou si tu as moins de 18 ans, demande conseil à un médecin ou un diététicien.</p>
+  <button class="btn" onclick="closeModal()">OK</button>`)}
+function vWeek(){const W=WK(),T=nTargets(),tg=wTargets();
+  if(!T)return `<div class="card empty">Pour préparer ta semaine, l'appli doit d'abord savoir combien tu dois manger.<div style="height:10px"></div><button class="btn" onclick="openNProfile()">🎯 Calculer mes besoins</button></div>`;
+  if(!W.days)return `<div class="card"><h3 style="font-size:20px">📅 Ta semaine en 1 clic</h3><p class="mut">L'appli choisit 28 repas pour toi (petit-déj, déjeuner, dîner, collation) et fait ta liste de courses.</p>${wOpts()}<div style="height:10px"></div><button class="btn" onclick="wGen()">✨ Préparer ma semaine</button></div>`;
+  const day=W.days[wDay],tot=day.reduce((a,x)=>{const r=RECI[x.id];return {k:a.k+r.k*x.x,p:a.p+r.p*x.x}},{k:0,p:0});
+  return `<div class="tabs">${WD.map((d,i)=>`<button class="${wDay===i?'on':''}" onclick="wDay=${i};render()">${d}${W.train[i]?" 🏋️":""}</button>`).join("")}</div>
+  <div class="card"><div class="row between"><h3 style="font-size:20px">${WDL[wDay]}</h3><span class="mut">${W.train[wDay]?"🏋️ Jour de sport":"😴 Jour de repos"}</span></div>
+   ${tg[wDay]?`<div class="mut" style="margin-top:2px">${Math.round(tot.k)} kcal · ${Math.round(tot.p)} g de protéines</div>`:""}
+   ${day.map((x,i)=>{const r=RECI[x.id];return `<div class="wrow"><div class="wimg g-${r.g}${rPh(r.id,200)}">${RIMG[r.id]?"":r.e}</div><div class="grow" onclick="nPort=${x.x};recModal(RECI['${r.id}'])"><div class="mut">${NM_ICO[x.m]} ${NM[x.m]}</div><b>${r.n}</b></div><button class="xbtn" style="font-size:18px" aria-label="Changer ce repas" onclick="wSwap(${wDay},${i})">🔄</button></div>`}).join("")}
+   <p class="mut" style="margin:8px 0 0;font-size:12px">Touche un repas pour la recette · 🔄 pour en changer</p>
+   <div style="height:10px"></div><button class="btn" onclick="wUseDay(${wDay})">✅ Je mange ça aujourd'hui</button></div>
+  <div class="grid2"><button class="btn sec" onclick="nView='courses';render();window.scrollTo(0,0)">🛒 Mes courses</button><button class="btn sec" onclick="openWOpts()">⚙️ Réglages</button></div>`}
+function wOpts(){const W=WK();return `<div class="mut" style="margin:10px 0 6px">Tes jours de sport (tu mangeras un peu plus ces jours-là) :</div>
+   <div class="row" style="gap:5px;flex-wrap:wrap">${WD.map((d,i)=>`<button class="pill ${W.train[i]?'on':''}" onclick="wTrainOpt(${i})">${d}</button>`).join("")}</div>
+   <div class="row" style="gap:6px;margin-top:8px"><button class="pill ${W.veg?'on':''}" onclick="WK().veg=WK().veg?0:1;save();wRe()">🌱 Végétarien</button><button class="pill ${W.fast?'on':''}" onclick="WK().fast=WK().fast?0:1;save();wRe()">⚡ Rapide</button></div>`}
+let wInModal=false;
+function wRe(){wInModal?openWOpts():render()}
+function wTrainOpt(i){wTrain(i);if(wInModal)openWOpts()}
+function openWOpts(){wInModal=true;modal(`<h2>⚙️ Réglages de ma semaine</h2>${wOpts()}<div style="height:14px"></div><button class="btn" onclick="wInModal=false;closeModal();wGen()">🔄 Refaire une nouvelle semaine</button><div style="height:8px"></div><button class="btn sec" onclick="wInModal=false;closeModal();render()">Fermer</button>`)}
+function wUseDay(d){const W=WK(),N=NU();N.day.meals={pdj:[],dej:[],din:[],col:[]};W.days[d].forEach(x=>N.day.meals[x.m].push([x.id,x.x]));save();nView="recettes";render();window.scrollTo(0,0);toast("✅ C'est noté pour aujourd'hui")}
+function nAdd(id,m){const N=NU();N.day.meals[m].push([id,nPort]);save();closeModal();toast("✅ Ajouté à ton "+NM[m].toLowerCase());render()}
 
 refreshPlanSession();
 render();initFriends();if(!S.onboarded){if(S.sessions.length){S.onboarded=true;save()}else onboarding()}
